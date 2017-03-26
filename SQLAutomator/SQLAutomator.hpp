@@ -7,14 +7,29 @@
 
 #include "../libReimu.hpp"
 #include "../Exception/Exception.hpp"
+#include "../UniversalType/UniversalType.hpp"
+
+#include <sqlite3.h>
 
 namespace Reimu {
     class SQLAutomator {
     private:
 	size_t LastCount_Columns = 0;
 	std::unordered_map<int, std::string> Cache_Statements;
+	std::shared_timed_mutex Lock_Cache_Statements;
+
+	std::unordered_map<int, std::string[2]> Statements_Ext;
+	std::shared_timed_mutex Lock_Statements_Ext;
 
     public:
+
+	enum StatmentType {
+	    CREATE_TABLE = 0x1, INSERT_INTO = 0x2, SELECT_FROM = 0x3,
+
+	    SqlitePrepared = 0x10000
+	};
+
+
 	class ColumnSpec {
 	private:
 	    std::string Cache_S;
@@ -40,15 +55,50 @@ namespace Reimu {
 	    std::string ToString();
 	};
 
-	enum StatmentType {
-	    CREATE_TABLE = 0x1, INSERT_INTO = 0x2,
+	class SQLite3 {
+	public:
+	    sqlite3 *SQLite3DB = NULL;
+	    sqlite3_stmt *SQLite3Statement = NULL;
 
-	    SqlitePrepared = 0x10000
+	    std::string Statement;
+	    std::vector<std::string> Keys;
+	    std::vector<Reimu::UniversalType> Values;
+
+	    std::string ErrorMessage;
+
+	    SQLite3();
+	    SQLite3(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
+
+	    int Open(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
+
+	    int Exec(std::string stmt_str, int (*callback)(void *, int, char **, char **) = NULL, void *cbarg = NULL);
+	    int Prepare();
+
+	    int Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name);
+
+	    int Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name,
+		      std::map<std::string, Reimu::UniversalType> kv);
+
+	    void Bind();
+	    int Bind(size_t narg, Reimu::UniversalType thisval);
+
+	    int Step();
+	    int Reset();
+
+	    ~SQLite3();
 	};
+
+
+
+	std::string TableName;
 
 	std::set<Reimu::SQLAutomator::ColumnSpec> Columns;
 
 	std::string Statement(Reimu::SQLAutomator::StatmentType st);
+//	std::string Statement(Reimu::SQLAutomator::StatmentType st, std::vector<std::string> args);
+
+
+	void Statement_Ext(Reimu::SQLAutomator::StatmentType st, const char *sext_prefix, const char *sext_suffix);
 
     };
 }

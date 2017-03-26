@@ -7,7 +7,7 @@ set(SOURCE_FILES IPEndPoint/IPEndPoint.cpp IPEndPoint/IPEndPoint.hpp libReimu.hp
 
 
 
-add_library(Reimu SHARED ${SOURCE_FILES} SQLAutomator/SQLAutomator.cpp SQLAutomator/SQLAutomator.hpp SQLAutomator/ColumnSpec.cpp)
+add_library(Reimu SHARED ${SOURCE_FILES} SQLAutomator/SQLAutomator.cpp SQLAutomator/SQLAutomator.hpp SQLAutomator/ColumnSpec.cpp UniversalType/UniversalType.cpp UniversalType/UniversalType.hpp SQLAutomator/SQLite3/SQLite3.cpp)
 add_library(Reimu_static STATIC ${SOURCE_FILES})
 
 set_target_properties(Reimu_static PROPERTIES OUTPUT_NAME Reimu)

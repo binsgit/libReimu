@@ -8,7 +8,9 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <map>
 #include <unordered_map>
+#include <shared_mutex>
 
 #include <cerrno>
 #include <cstring>
