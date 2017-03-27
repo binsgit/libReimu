@@ -4,19 +4,21 @@
 
 #include "SQLAutomator.hpp"
 
-Reimu::SQLAutomator::ColumnSpec::ColumnSpec(std::string Name, Reimu::SQLAutomator::ColumnSpec::_DataType dataType,
-					    size_t Length) {
-
+Reimu::SQLAutomator::ColumnSpec::ColumnSpec(std::string col_name, Reimu::SQLAutomator::ColumnSpec::Type dataType,
+					    size_t datalength) {
+	Name = col_name;
+	DataType = dataType;
+	Length = datalength;
 }
 
 std::string Reimu::SQLAutomator::ColumnSpec::ToString() {
 	if (!Cache_S.size())
-		Cache_S = Name + " " + ToString(DataType);
+		Cache_S = Name + " " + ToString(DataType, Length);
 
 	return Cache_S;
 }
 
-std::string Reimu::SQLAutomator::ColumnSpec::ToString(Reimu::SQLAutomator::ColumnSpec::_DataType dt) {
+std::string Reimu::SQLAutomator::ColumnSpec::ToString(Reimu::SQLAutomator::ColumnSpec::Type dt, size_t datalength) {
 	std::string ret;
 
 	if (dt & UNSIGNED)
@@ -24,14 +26,11 @@ std::string Reimu::SQLAutomator::ColumnSpec::ToString(Reimu::SQLAutomator::Colum
 
 	if (dt & INTEGER)
 		ret += "INTEGER ";
-
-	if (dt & TEXT)
+	else if (dt & TEXT)
 		ret += "TEXT ";
-
-	if (dt & REAL)
+	else if (dt & REAL)
 		ret += "REAL ";
-
-	if (dt & BLOB)
+	else if (dt & BLOB)
 		ret += "BLOB ";
 
 	if (dt & NOT_NULL)

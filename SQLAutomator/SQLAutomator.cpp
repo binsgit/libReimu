@@ -4,7 +4,7 @@
 
 #include "SQLAutomator.hpp"
 
-std::string Reimu::SQLAutomator::Statement(Reimu::SQLAutomator::StatmentType st) {
+std::string Reimu::SQLAutomator::Statement(int stmt_type) {
 
 	bool InvalidateCaches = 0;
 
@@ -16,18 +16,20 @@ std::string Reimu::SQLAutomator::Statement(Reimu::SQLAutomator::StatmentType st)
 
 	if (!InvalidateCaches) {
 		Lock_Cache_Statements.lock_shared();
-		auto cachetgt = Cache_Statements.find(st);
+		auto cachetgt = Cache_Statements.find(stmt_type);
 		if (cachetgt != Cache_Statements.end()) {
 			ret = cachetgt->second;
 		}
 		Lock_Cache_Statements.unlock_shared();
-		return ret;
+
+		if (ret.length())
+			return ret;
 	}
 
 	std::string sext[2];
 
 	Lock_Statements_Ext.lock_shared();
-	auto ftgt_sext = Statements_Ext.find(st);
+	auto ftgt_sext = Statements_Ext.find(stmt_type);
 	if (ftgt_sext != Statements_Ext.end()) {
 		if (ftgt_sext->second[0].size()) {
 			sext[0] = ftgt_sext->second[0];
@@ -41,21 +43,22 @@ std::string Reimu::SQLAutomator::Statement(Reimu::SQLAutomator::StatmentType st)
 	if (sext[0].size())
 		ret += sext[0];
 
-	if (st & CREATE_TABLE) {
+	if (stmt_type & CREATE_TABLE) {
 		ret += "CREATE TABLE " + TableName + " (";
 
-		for (auto const &thisCol : Columns) {
-			ret += thisCol.Name + " " + thisCol.ToString(thisCol.DataType) + ",";
+		for (auto &thisCol : ColumnNames) {
+			auto thiscspec = Columns.find(thisCol);
+			ret += thiscspec->second.ToString() + ",";
 		}
 
 		ret.pop_back();
 		ret += ") ";
-	} else if (st & INSERT_INTO) {
+	} else if (stmt_type & INSERT_INTO) {
 		ret += "INSERT INTO " + TableName + " VALUES (";
 
-		if (st & SqlitePrepared) {
+		if (stmt_type & SqlitePrepared) {
 			size_t j = 1;
-			for (auto const &thisCol : Columns) {
+			for (auto const &thisCol : ColumnNames) {
 				ret += "?" + std::to_string(j) + ",";
 				j++;
 			}
@@ -63,6 +66,8 @@ std::string Reimu::SQLAutomator::Statement(Reimu::SQLAutomator::StatmentType st)
 
 		ret.pop_back();
 		ret += ") ";
+	} else if (stmt_type & SELECT_FROM) {
+		ret += "SELECT * FROM " + TableName;
 	} else {
 		throw Reimu::Exception(ENOSYS);
 	}
@@ -71,26 +76,41 @@ std::string Reimu::SQLAutomator::Statement(Reimu::SQLAutomator::StatmentType st)
 		ret += sext[1];
 
 	Lock_Cache_Statements.lock();
-	Cache_Statements.erase(st);
-	Cache_Statements[st] = ret;
+	Cache_Statements.erase(stmt_type);
+	Cache_Statements[stmt_type] = ret;
 	Lock_Cache_Statements.unlock();
 
 	return ret;
 }
 
-void Reimu::SQLAutomator::Statement_Ext(Reimu::SQLAutomator::StatmentType st, const char *sext_prefix, const char *sext_suffix) {
+void Reimu::SQLAutomator::Statement_Ext(int stmt_type, const char *sext_prefix, const char *sext_suffix) {
 	Lock_Statements_Ext.lock();
 	if (sext_prefix) {
 		if (sext_prefix[0]) {
-			Statements_Ext[st][0].clear();
-			Statements_Ext[st][0] += sext_prefix;
+			Statements_Ext[stmt_type][0].clear();
+			Statements_Ext[stmt_type][0] += sext_prefix;
 		}
 	}
-	if (sext_prefix) {
-		if (sext_prefix[0]) {
-			Statements_Ext[st][1].clear();
-			Statements_Ext[st][1] += sext_suffix;
+	if (sext_suffix) {
+		if (sext_suffix[0]) {
+			Statements_Ext[stmt_type][1].clear();
+			Statements_Ext[stmt_type][1] += sext_suffix;
 		}
 	}
-	Lock_Statements_Ext.unlock_shared();
+	Lock_Statements_Ext.unlock();
+}
+
+bool Reimu::SQLAutomator::InsertColumn(Reimu::SQLAutomator::ColumnSpec col) {
+	ColumnNames.push_back(col.Name);
+	Columns.insert(std::pair<std::string, Reimu::SQLAutomator::ColumnSpec>(col.Name, col));
+}
+
+bool Reimu::SQLAutomator::InsertColumns(std::vector<Reimu::SQLAutomator::ColumnSpec> cols) {
+	for (auto const &thiscol : cols) {
+		InsertColumn(thiscol);
+	}
+}
+
+Reimu::SQLAutomator::SQLite3 Reimu::SQLAutomator::OpenSQLite3() {
+	return Reimu::SQLAutomator::SQLite3(DatabaseURI);
 }

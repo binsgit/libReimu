@@ -38,9 +38,14 @@ void Reimu::SQLAutomator::SQLite3::Bind() {
 }
 
 int Reimu::SQLAutomator::SQLite3::Prepare() {
+	sqlite3_finalize(SQLite3Statement);
 	return sqlite3_prepare(SQLite3DB, Statement.c_str(), (int)Statement.length(), &SQLite3Statement, NULL);
 }
 
+int Reimu::SQLAutomator::SQLite3::Prepare(std::string stmt_str) {
+	Statement = stmt_str;
+	return Prepare();
+}
 
 int Reimu::SQLAutomator::SQLite3::Reset() {
 	return sqlite3_reset(SQLite3Statement);
@@ -58,22 +63,30 @@ Reimu::SQLAutomator::SQLite3::~SQLite3() {
 		sqlite3_close(SQLite3DB);
 }
 
-int Reimu::SQLAutomator::SQLite3::Exec(std::string stmt_str, int (*callback)(void *, int, char **, char **),void *cbarg) {
+int Reimu::SQLAutomator::SQLite3::Exec() {
 	char *errmsg = NULL;
-	int ret = sqlite3_exec(SQLite3DB, stmt_str.c_str(), callback, cbarg, &errmsg);
+	int ret = sqlite3_exec(SQLite3DB, Statement.c_str(), Callback, CallbackArg, &errmsg);
 	if (errmsg)
 		ErrorMessage = std::string(errmsg);
 	return ret;
 }
 
-int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name,
+int Reimu::SQLAutomator::SQLite3::Exec(std::string stmt_str, int (*callback)(void *, int, char **, char **),void *cbarg) {
+	Statement = stmt_str;
+	Callback = callback;
+	CallbackArg = cbarg;
+
+	return Exec();
+}
+
+int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatementType st, std::string table_name,
 					std::map<std::string, Reimu::UniversalType> kv) {
 	Statement.clear();
 	Values.clear();
 
-	if (st & Reimu::SQLAutomator::StatmentType::CREATE_TABLE) {
+	if (st & Reimu::SQLAutomator::StatementType::CREATE_TABLE) {
 
-	} else if (st & Reimu::SQLAutomator::StatmentType::INSERT_INTO) {
+	} else if (st & Reimu::SQLAutomator::StatementType::INSERT_INTO) {
 		size_t j = 1;
 
 		Statement += "INSERT INTO " + table_name + " (";
@@ -100,10 +113,10 @@ int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatmentType st, st
 	}
 }
 
-int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name) {
+int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatementType st, std::string table_name) {
 	Statement.clear();
 
-	if (st & Reimu::SQLAutomator::StatmentType::SELECT_FROM) {
+	if (st & Reimu::SQLAutomator::StatementType::SELECT_FROM) {
 		Statement += "SELECT ";
 		if (!Keys.size())
 			Statement.push_back('*');

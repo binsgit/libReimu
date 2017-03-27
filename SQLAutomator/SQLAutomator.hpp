@@ -23,8 +23,8 @@ namespace Reimu {
 
     public:
 
-	enum StatmentType {
-	    CREATE_TABLE = 0x1, INSERT_INTO = 0x2, SELECT_FROM = 0x3,
+	enum StatementType {
+	    CREATE_TABLE = 0x1, INSERT_INTO = 0x2, SELECT_FROM = 0x4,
 
 	    SqlitePrepared = 0x10000
 	};
@@ -35,7 +35,7 @@ namespace Reimu {
 	    std::string Cache_S;
 
 	public:
-	    enum _DataType {
+	    enum Type {
 		INTEGER = 0x1, TEXT = 0x2, REAL = 0x4, BLOB = 0x8, // sqlite
 
 		UNSIGNED = 0x1000,
@@ -47,11 +47,11 @@ namespace Reimu {
 
 	    size_t Length = 0;
 	    std::string Name;
-	    _DataType DataType;
+	    Type DataType;
 
-	    ColumnSpec(std::string Name, _DataType dataType, size_t Length=0);
+	    ColumnSpec(std::string col_name, Reimu::SQLAutomator::ColumnSpec::Type dataType, size_t datalength=0);
 
-	    static std::string ToString(Reimu::SQLAutomator::ColumnSpec::_DataType dt);
+	    static std::string ToString(Reimu::SQLAutomator::ColumnSpec::Type dt, size_t datalength=0);
 	    std::string ToString();
 	};
 
@@ -61,8 +61,11 @@ namespace Reimu {
 	    sqlite3_stmt *SQLite3Statement = NULL;
 
 	    std::string Statement;
+	    int (*Callback)(void *, int, char **, char **) = NULL;
+	    void *CallbackArg = NULL;
 	    std::vector<std::string> Keys;
 	    std::vector<Reimu::UniversalType> Values;
+
 
 	    std::string ErrorMessage;
 
@@ -71,12 +74,15 @@ namespace Reimu {
 
 	    int Open(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
 
+	    int Exec();
 	    int Exec(std::string stmt_str, int (*callback)(void *, int, char **, char **) = NULL, void *cbarg = NULL);
+
 	    int Prepare();
+	    int Prepare(std::string stmt_str);
 
-	    int Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name);
+	    int Parse(Reimu::SQLAutomator::StatementType st, std::string table_name);
 
-	    int Parse(Reimu::SQLAutomator::StatmentType st, std::string table_name,
+	    int Parse(Reimu::SQLAutomator::StatementType st, std::string table_name,
 		      std::map<std::string, Reimu::UniversalType> kv);
 
 	    void Bind();
@@ -89,16 +95,22 @@ namespace Reimu {
 	};
 
 
-
+	std::string DatabaseURI;
 	std::string TableName;
 
-	std::set<Reimu::SQLAutomator::ColumnSpec> Columns;
+	std::vector<std::string> ColumnNames;
+	std::map<std::string, Reimu::SQLAutomator::ColumnSpec> Columns;
 
-	std::string Statement(Reimu::SQLAutomator::StatmentType st);
+	SQLite3 OpenSQLite3();
+
+	bool InsertColumn(Reimu::SQLAutomator::ColumnSpec col);
+	bool InsertColumns(std::vector<Reimu::SQLAutomator::ColumnSpec> cols);
+
+	std::string Statement(int stmt_type);
 //	std::string Statement(Reimu::SQLAutomator::StatmentType st, std::vector<std::string> args);
 
 
-	void Statement_Ext(Reimu::SQLAutomator::StatmentType st, const char *sext_prefix, const char *sext_suffix);
+	void Statement_Ext(int stmt_type, const char *sext_prefix, const char *sext_suffix);
 
     };
 }
