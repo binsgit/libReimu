@@ -49,7 +49,8 @@ namespace Reimu {
 	    std::string Name;
 	    Type DataType;
 
-	    ColumnSpec(std::string col_name, Reimu::SQLAutomator::ColumnSpec::Type dataType, size_t datalength=0);
+	    ColumnSpec();
+	    ColumnSpec(std::string col_name, int dataType, size_t datalength=0);
 
 	    static std::string ToString(Reimu::SQLAutomator::ColumnSpec::Type dt, size_t datalength=0);
 	    std::string ToString();
@@ -105,6 +106,7 @@ namespace Reimu {
 
 	bool InsertColumn(Reimu::SQLAutomator::ColumnSpec col);
 	bool InsertColumns(std::vector<Reimu::SQLAutomator::ColumnSpec> cols);
+//	bool InsertColumns(std::vector<std::pair<std::string, int>> cols);
 
 	std::string Statement(int stmt_type);
 //	std::string Statement(Reimu::SQLAutomator::StatmentType st, std::vector<std::string> args);

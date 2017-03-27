@@ -4,10 +4,14 @@
 
 #include "SQLAutomator.hpp"
 
-Reimu::SQLAutomator::ColumnSpec::ColumnSpec(std::string col_name, Reimu::SQLAutomator::ColumnSpec::Type dataType,
+Reimu::SQLAutomator::ColumnSpec::ColumnSpec() {
+
+}
+
+Reimu::SQLAutomator::ColumnSpec::ColumnSpec(std::string col_name, int dataType,
 					    size_t datalength) {
 	Name = col_name;
-	DataType = dataType;
+	DataType = (Reimu::SQLAutomator::ColumnSpec::Type)dataType;
 	Length = datalength;
 }
 

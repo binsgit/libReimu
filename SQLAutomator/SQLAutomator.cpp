@@ -51,7 +51,10 @@ std::string Reimu::SQLAutomator::Statement(int stmt_type) {
 			ret += thiscspec->second.ToString() + ",";
 		}
 
-		ret.pop_back();
+		if (sext[1].size())
+			ret += sext[1];
+		else
+			ret.pop_back();
 		ret += ") ";
 	} else if (stmt_type & INSERT_INTO) {
 		ret += "INSERT INTO " + TableName + " VALUES (";
@@ -66,14 +69,18 @@ std::string Reimu::SQLAutomator::Statement(int stmt_type) {
 
 		ret.pop_back();
 		ret += ") ";
+
+		if (sext[1].size())
+			ret += sext[1];
 	} else if (stmt_type & SELECT_FROM) {
 		ret += "SELECT * FROM " + TableName;
+		if (sext[1].size())
+			ret += sext[1];
 	} else {
 		throw Reimu::Exception(ENOSYS);
 	}
 
-	if (sext[1].size())
-		ret += sext[1];
+
 
 	Lock_Cache_Statements.lock();
 	Cache_Statements.erase(stmt_type);
@@ -111,6 +118,14 @@ bool Reimu::SQLAutomator::InsertColumns(std::vector<Reimu::SQLAutomator::ColumnS
 	}
 }
 
+//bool Reimu::SQLAutomator::InsertColumns(std::vector<std::pair<std::string, int>> cols) {
+//	for (auto const &thiscol : cols) {
+//		InsertColumn(ColumnSpec(thiscol.first, (ColumnSpec::Type)thiscol.second));
+//	}
+//}
+
+
 Reimu::SQLAutomator::SQLite3 Reimu::SQLAutomator::OpenSQLite3() {
 	return Reimu::SQLAutomator::SQLite3(DatabaseURI);
 }
+
