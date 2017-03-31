@@ -93,16 +93,12 @@ std::string Reimu::SQLAutomator::Statement(int stmt_type) {
 void Reimu::SQLAutomator::Statement_Ext(int stmt_type, const char *sext_prefix, const char *sext_suffix) {
 	Lock_Statements_Ext.lock();
 	if (sext_prefix) {
-		if (sext_prefix[0]) {
-			Statements_Ext[stmt_type][0].clear();
-			Statements_Ext[stmt_type][0] += sext_prefix;
-		}
+		Statements_Ext[stmt_type][0].clear();
+		Statements_Ext[stmt_type][0] += sext_prefix;
 	}
 	if (sext_suffix) {
-		if (sext_suffix[0]) {
-			Statements_Ext[stmt_type][1].clear();
-			Statements_Ext[stmt_type][1] += sext_suffix;
-		}
+		Statements_Ext[stmt_type][1].clear();
+		Statements_Ext[stmt_type][1] += sext_suffix;
 	}
 	Lock_Statements_Ext.unlock();
 }
