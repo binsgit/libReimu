@@ -67,11 +67,13 @@ namespace Reimu {
 	    std::vector<std::string> Keys;
 	    std::vector<Reimu::UniversalType> Values;
 
+	    Reimu::SQLAutomator *Parent = NULL;
 
 	    std::string ErrorMessage;
 
 	    SQLite3();
-	    SQLite3(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
+	    SQLite3(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL,
+		    Reimu::SQLAutomator *parent=NULL);
 
 	    int Open(std::string db_uri, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
 
@@ -89,6 +91,9 @@ namespace Reimu {
 	    void Bind();
 	    int Bind(size_t narg, Reimu::UniversalType thisval);
 
+	    int PPB/* Parse, Prepare, Bind */(Reimu::SQLAutomator::StatementType st, std::string table_name,
+		      std::map<std::string, Reimu::UniversalType> kv);
+
 	    int Step();
 	    int Reset();
 
@@ -103,6 +108,7 @@ namespace Reimu {
 	std::map<std::string, Reimu::SQLAutomator::ColumnSpec> Columns;
 
 	SQLite3 OpenSQLite3(int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
+	SQLite3 OpenSQLite3(int preload_stmt_type=-1, int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
 
 	bool InsertColumn(Reimu::SQLAutomator::ColumnSpec col);
 	bool InsertColumns(std::vector<Reimu::SQLAutomator::ColumnSpec> cols);

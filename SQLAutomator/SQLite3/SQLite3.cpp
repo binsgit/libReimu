@@ -4,10 +4,11 @@ Reimu::SQLAutomator::SQLite3::SQLite3() {
 
 }
 
-Reimu::SQLAutomator::SQLite3::SQLite3(std::string db_uri, int flags, char *vfs) {
+Reimu::SQLAutomator::SQLite3::SQLite3(std::string db_uri, int flags, char *vfs, Reimu::SQLAutomator *parent) {
 	int rc = Open(db_uri, flags, vfs);
 	if (SQLITE_OK != rc)
 		throw Reimu::Exception(rc, SQLite3DB);
+	Parent = parent;
 }
 
 int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs) {
@@ -39,7 +40,10 @@ void Reimu::SQLAutomator::SQLite3::Bind() {
 }
 
 int Reimu::SQLAutomator::SQLite3::Prepare() {
-	sqlite3_finalize(SQLite3Statement);
+	if (SQLite3Statement) {
+		sqlite3_finalize(SQLite3Statement);
+		SQLite3Statement = NULL;
+	}
 	return sqlite3_prepare(SQLite3DB, Statement.c_str(), (int)Statement.length(), &SQLite3Statement, NULL);
 }
 
@@ -132,5 +136,12 @@ int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatementType st, s
 	} else {
 		throw Reimu::Exception(ENOSYS);
 	}
+}
+
+int Reimu::SQLAutomator::SQLite3::PPB(Reimu::SQLAutomator::StatementType st, std::string table_name,
+				      std::map<std::string, Reimu::UniversalType> kv) {
+	Parse(st, table_name, kv);
+	Prepare();
+	Bind();
 }
 
