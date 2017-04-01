@@ -121,7 +121,7 @@ bool Reimu::SQLAutomator::InsertColumns(std::vector<Reimu::SQLAutomator::ColumnS
 //}
 
 
-Reimu::SQLAutomator::SQLite3 Reimu::SQLAutomator::OpenSQLite3() {
-	return Reimu::SQLAutomator::SQLite3(DatabaseURI);
+Reimu::SQLAutomator::SQLite3 Reimu::SQLAutomator::OpenSQLite3(int flags, char *vfs) {
+	return Reimu::SQLAutomator::SQLite3(DatabaseURI, flags, vfs);
 }
 

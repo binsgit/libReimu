@@ -4,6 +4,10 @@
 
 #include "IPEndPoint.hpp"
 
+Reimu::IPEndPoint::IPEndPoint() {
+
+}
+
 Reimu::IPEndPoint::IPEndPoint(int af) {
 	if (af != AF_INET && af != AF_INET6)
 		throw Reimu::Exception(EPFNOSUPPORT);

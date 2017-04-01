@@ -45,6 +45,7 @@ namespace Reimu {
 	bool const operator== (const Reimu::IPEndPoint &o) const;
 	bool const operator< (const Reimu::IPEndPoint &o) const;
 
+	IPEndPoint();
 	IPEndPoint(int af);
 	IPEndPoint(std::string ip_str, uint16_t port);
 

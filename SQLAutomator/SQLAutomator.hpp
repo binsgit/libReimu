@@ -102,7 +102,7 @@ namespace Reimu {
 	std::vector<std::string> ColumnNames;
 	std::map<std::string, Reimu::SQLAutomator::ColumnSpec> Columns;
 
-	SQLite3 OpenSQLite3();
+	SQLite3 OpenSQLite3(int flags=SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, char *vfs = NULL);
 
 	bool InsertColumn(Reimu::SQLAutomator::ColumnSpec col);
 	bool InsertColumns(std::vector<Reimu::SQLAutomator::ColumnSpec> cols);

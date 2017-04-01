@@ -5,8 +5,9 @@ Reimu::SQLAutomator::SQLite3::SQLite3() {
 }
 
 Reimu::SQLAutomator::SQLite3::SQLite3(std::string db_uri, int flags, char *vfs) {
-	if (SQLITE_OK != Open(db_uri, flags, vfs))
-		throw Reimu::Exception(EBADF);
+	int rc = Open(db_uri, flags, vfs);
+	if (SQLITE_OK != rc)
+		throw Reimu::Exception(rc, SQLite3DB);
 }
 
 int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs) {
