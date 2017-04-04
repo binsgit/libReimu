@@ -40,13 +40,16 @@ namespace Reimu {
 	    sockaddr_in6 v6;
 	} SockAddr;
 
-	int FD_Socket = 0;
+	int FD_Socket = -1;
 
 	bool const operator== (const Reimu::IPEndPoint &o) const;
 	bool const operator< (const Reimu::IPEndPoint &o) const;
 
 	IPEndPoint();
 	IPEndPoint(int af);
+	IPEndPoint(sockaddr_in *sa4);
+	IPEndPoint(sockaddr_in6 *sa6);
+	IPEndPoint(void *inaddr, size_t inaddr_len, uint16_t port);
 	IPEndPoint(std::string ip_str, uint16_t port);
 
 	int Connect(int ext_socket_type=0, int ext_socket_protocol=0);

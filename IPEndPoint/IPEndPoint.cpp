@@ -15,6 +15,36 @@ Reimu::IPEndPoint::IPEndPoint(int af) {
 	AddressFamily = af;
 }
 
+Reimu::IPEndPoint::IPEndPoint(void *inaddr, size_t inaddr_len, uint16_t port) {
+	if (inaddr_len == 4) {
+		AddressFamily = AF_INET;
+		SockAddr.v4.sin_port = htons(port);
+		Port_N = &SockAddr.v4.sin_port;
+		memcpy(&SockAddr.v4.sin_addr, inaddr, 4);
+	} else if (inaddr_len == 16) {
+		AddressFamily = AF_INET6;
+		SockAddr.v6.sin6_port = htons(port);
+		Port_N = &SockAddr.v6.sin6_port;
+		memcpy(&SockAddr.v6.sin6_addr, inaddr, 16);
+	}
+
+	Port = port;
+}
+
+Reimu::IPEndPoint::IPEndPoint(sockaddr_in *sa4) {
+	AddressFamily = AF_INET;
+	memcpy(&SockAddr.v4, sa4, sizeof(sockaddr_in));
+	Port_N = &SockAddr.v4.sin_port;
+	Port = ntohs(SockAddr.v4.sin_port);
+}
+
+Reimu::IPEndPoint::IPEndPoint(sockaddr_in6 *sa6) {
+	AddressFamily = AF_INET6;
+	memcpy(&SockAddr.v6, sa6, sizeof(sockaddr_in6));
+	Port_N = &SockAddr.v6.sin6_port;
+	Port = ntohs(SockAddr.v6.sin6_port);
+}
+
 Reimu::IPEndPoint::IPEndPoint(std::string ip_str, uint16_t port) {
 	if (strchr(ip_str.c_str(), ':')) {
 		AddressFamily = AF_INET6;
@@ -127,3 +157,4 @@ bool const Reimu::IPEndPoint::operator<(const Reimu::IPEndPoint &o) const {
 		}
 	}
 }
+
