@@ -95,6 +95,10 @@ namespace Reimu {
 		      std::map<std::string, Reimu::UniversalType> kv);
 
 	    int Step();
+//
+//	    int64_t Column(int nCol);
+//	    double Column(int nCol);
+
 	    int Reset();
 
 	    ~SQLite3();

@@ -80,6 +80,9 @@ Reimu::UniversalType::UniversalType(void *v, size_t l) {
 }
 
 void Reimu::UniversalType::Value(void *out) {
+
+	int aaa = UniversalType(233);
+
 	switch (Type) {
 		case INT8:
 			*(int8_t *)out = NumericStore.int8;
@@ -190,5 +193,236 @@ std::vector<uint8_t> Reimu::UniversalType::Blob() {
 	if (Type != BLOB)
 		throw Reimu::Exception(EINVAL);
 
+	return BlobStore;
+}
+
+Reimu::UniversalType::operator int8_t() {
+	switch (Type) {
+		case INT8:
+			return (int8_t)NumericStore.int8;
+		case UINT8:
+			return (int8_t)NumericStore.uint8;
+		case INT16:
+			return (int8_t)NumericStore.int16;
+		case UINT16:
+			return (int8_t)NumericStore.uint16;
+		case INT32:
+			return (int8_t)NumericStore.int32;
+		case UINT32:
+			return (int8_t)NumericStore.uint32;
+		case INT64:
+			return (int8_t)NumericStore.int64;
+		case UINT64:
+			return (int8_t)NumericStore.uint64;
+		case STRING:
+			return (int8_t)strtol(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator uint8_t() {
+	switch (Type) {
+		case INT8:
+			return (uint8_t)NumericStore.int8;
+		case UINT8:
+			return (uint8_t)NumericStore.uint8;
+		case INT16:
+			return (uint8_t)NumericStore.int16;
+		case UINT16:
+			return (uint8_t)NumericStore.uint16;
+		case INT32:
+			return (uint8_t)NumericStore.int32;
+		case UINT32:
+			return (uint8_t)NumericStore.uint32;
+		case INT64:
+			return (uint8_t)NumericStore.int64;
+		case UINT64:
+			return (uint8_t)NumericStore.uint64;
+		case STRING:
+			return (uint8_t)strtoul(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator int16_t() {
+	switch (Type) {
+		case INT8:
+			return (int16_t)NumericStore.int8;
+		case UINT8:
+			return (int16_t)NumericStore.uint8;
+		case INT16:
+			return (int16_t)NumericStore.int16;
+		case UINT16:
+			return (int16_t)NumericStore.uint16;
+		case INT32:
+			return (int16_t)NumericStore.int32;
+		case UINT32:
+			return (int16_t)NumericStore.uint32;
+		case INT64:
+			return (int16_t)NumericStore.int64;
+		case UINT64:
+			return (int16_t)NumericStore.uint64;
+		case STRING:
+			return (int16_t)strtol(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator uint16_t() {
+	switch (Type) {
+		case INT8:
+			return (uint16_t)NumericStore.int8;
+		case UINT8:
+			return (uint16_t)NumericStore.uint8;
+		case INT16:
+			return (uint16_t)NumericStore.int16;
+		case UINT16:
+			return (uint16_t)NumericStore.uint16;
+		case INT32:
+			return (uint16_t)NumericStore.int32;
+		case UINT32:
+			return (uint16_t)NumericStore.uint32;
+		case INT64:
+			return (uint16_t)NumericStore.int64;
+		case UINT64:
+			return (uint16_t)NumericStore.uint64;
+		case STRING:
+			return (uint16_t)strtoul(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator int32_t() {
+	switch (Type) {
+		case INT8:
+			return (int32_t)NumericStore.int8;
+		case UINT8:
+			return (int32_t)NumericStore.uint8;
+		case INT16:
+			return (int32_t)NumericStore.int16;
+		case UINT16:
+			return (int32_t)NumericStore.uint16;
+		case INT32:
+			return (int32_t)NumericStore.int32;
+		case UINT32:
+			return (int32_t)NumericStore.uint32;
+		case INT64:
+			return (int32_t)NumericStore.int64;
+		case UINT64:
+			return (int32_t)NumericStore.uint64;
+		case STRING:
+			return (int32_t)strtol(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator uint32_t() {
+	switch (Type) {
+		case INT8:
+			return (uint32_t)NumericStore.int8;
+		case UINT8:
+			return (uint32_t)NumericStore.uint8;
+		case INT16:
+			return (uint32_t)NumericStore.int16;
+		case UINT16:
+			return (uint32_t)NumericStore.uint16;
+		case INT32:
+			return (uint32_t)NumericStore.int32;
+		case UINT32:
+			return (uint32_t)NumericStore.uint32;
+		case INT64:
+			return (uint32_t)NumericStore.int64;
+		case UINT64:
+			return (uint32_t)NumericStore.uint64;
+		case STRING:
+			return (uint32_t)strtoul(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator int64_t() {
+	switch (Type) {
+		case INT8:
+			return (int64_t)NumericStore.int8;
+		case UINT8:
+			return (int64_t)NumericStore.uint8;
+		case INT16:
+			return (int64_t)NumericStore.int16;
+		case UINT16:
+			return (int64_t)NumericStore.uint16;
+		case INT32:
+			return (int64_t)NumericStore.int32;
+		case UINT32:
+			return (int64_t)NumericStore.uint32;
+		case INT64:
+			return (int64_t)NumericStore.int64;
+		case UINT64:
+			return (int64_t)NumericStore.uint64;
+		case STRING:
+			return (int64_t)strtoll(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator uint64_t() {
+	switch (Type) {
+		case INT8:
+			return (uint64_t)NumericStore.int8;
+		case UINT8:
+			return (uint64_t)NumericStore.uint8;
+		case INT16:
+			return (uint64_t)NumericStore.int16;
+		case UINT16:
+			return (uint64_t)NumericStore.uint16;
+		case INT32:
+			return (uint64_t)NumericStore.int32;
+		case UINT32:
+			return (uint64_t)NumericStore.uint32;
+		case INT64:
+			return (uint64_t)NumericStore.int64;
+		case UINT64:
+			return (uint64_t)NumericStore.uint64;
+		case STRING:
+			return (uint64_t)strtoull(StringStore.c_str(), NULL, 10);
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator std::string() {
+	switch (Type) {
+		case INT8:
+			return std::to_string(NumericStore.int8);
+		case UINT8:
+			return std::to_string(NumericStore.uint8);
+		case INT16:
+			return std::to_string(NumericStore.int16);
+		case UINT16:
+			return std::to_string(NumericStore.uint16);
+		case INT32:
+			return std::to_string(NumericStore.int32);
+		case UINT32:
+			return std::to_string(NumericStore.uint32);
+		case INT64:
+			return std::to_string(NumericStore.int64);
+		case UINT64:
+			return std::to_string(NumericStore.uint64);
+		case STRING:
+			return StringStore;
+		default:
+			throw Reimu::Exception(EINVAL);
+	}
+}
+
+Reimu::UniversalType::operator std::vector<uint8_t>() {
+	if (Type != BLOB)
+		throw Reimu::Exception(EINVAL);
 	return BlobStore;
 }

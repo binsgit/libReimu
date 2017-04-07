@@ -62,6 +62,18 @@ namespace Reimu {
 	std::string String();
 	std::vector<uint8_t> Blob();
 
+	operator int8_t();
+	operator uint8_t();
+	operator int16_t();
+	operator uint16_t();
+	operator int32_t();
+	operator uint32_t();
+	operator int64_t();
+	operator uint64_t();
+
+	operator std::vector<uint8_t>();
+	operator std::string();
+
     };
 }
 #endif //LIBREIMU_UNIVERSALTYPE_HPP
