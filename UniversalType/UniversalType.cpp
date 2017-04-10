@@ -69,9 +69,15 @@ Reimu::UniversalType::UniversalType(std::vector<uint8_t> v) {
 	BlobStore = v;
 }
 
-Reimu::UniversalType::UniversalType(void *v) {
+Reimu::UniversalType::UniversalType(char *v) {
 	Type = STRING;
-	StringStore += (char *)v;
+	StringStore += v;
+}
+
+
+Reimu::UniversalType::UniversalType(void *v) {
+	NumericStore.ptr_void = v;
+	Type = PTR_VOID;
 }
 
 Reimu::UniversalType::UniversalType(void *v, size_t l) {
@@ -80,8 +86,6 @@ Reimu::UniversalType::UniversalType(void *v, size_t l) {
 }
 
 void Reimu::UniversalType::Value(void *out) {
-
-	int aaa = UniversalType(233);
 
 	switch (Type) {
 		case INT8:
@@ -432,4 +436,29 @@ Reimu::UniversalType::operator const char *() {
 		return (const char *)&BlobStore[0];
 	else if (Type == STRING)
 		return StringStore.c_str();
+}
+
+Reimu::UniversalType::operator void *() {
+	if (Type == PTR_VOID)
+		return NumericStore.ptr_void;
+
+	if (Type == BLOB)
+		return &BlobStore[0];
+
+	if (Type == STRING)
+		return (void *)StringStore.c_str();
+}
+
+Reimu::UniversalType::operator std::vector<uint8_t> *() {
+	if (Type != BLOB)
+		throw Reimu::Exception(EINVAL);
+
+	return &BlobStore;
+}
+
+Reimu::UniversalType::operator std::string *() {
+	if (Type != STRING)
+		throw Reimu::Exception(EINVAL);
+
+	return &StringStore;
 }

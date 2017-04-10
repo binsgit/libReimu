@@ -14,7 +14,8 @@ namespace Reimu {
 	enum Types {
 	    INT8 = 1, UINT8 = 2, INT16 = 3, UINT16 = 4, INT32 = 5, UINT32 = 6, INT64 = 7, UINT64 = 8,
 	    FLOAT = 11, DOUBLE = 12, LONGDOUBLE = 13,
-	    STRING = 21, BLOB = 31
+	    STRING = 21, BLOB = 31,
+	    PTR_VOID = 40
 	};
 
 	union OqO {
@@ -29,6 +30,7 @@ namespace Reimu {
 	    float floatOqO;
 	    double doubleOqO;
 	    long double ldoubleOqO;
+	    void *ptr_void;
 	} NumericStore;
 
 	std::vector<uint8_t> BlobStore;
@@ -51,8 +53,10 @@ namespace Reimu {
 
 	UniversalType(std::string v);
 	UniversalType(std::vector<uint8_t> v);
-	UniversalType(void *v);
+	UniversalType(char *v);
 	UniversalType(void *v, size_t l);
+
+	UniversalType(void *v);
 
 	~UniversalType();
 
@@ -72,8 +76,11 @@ namespace Reimu {
 	operator uint64_t();
 
 	operator std::vector<uint8_t>();
+	operator std::vector<uint8_t> *();
 	operator std::string();
+	operator std::string *();
 	operator const char *();
+	operator void *();
 
     };
 }
