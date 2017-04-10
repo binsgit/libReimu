@@ -14,6 +14,8 @@
 
     You should have received a copy of the GNU General Public License
     along with libReimu.  If not, see <http://www.gnu.org/licenses/>.
+
+    IPEndPoint - A new way to hold a network address. Borrowed from C#.
  */
 
 #ifndef LIBREIMU_IPENDPOINT_HPP
