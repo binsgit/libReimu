@@ -95,9 +95,9 @@ namespace Reimu {
 		      std::map<std::string, Reimu::UniversalType> kv);
 
 	    int Step();
-//
-//	    int64_t Column(int nCol);
-//	    double Column(int nCol);
+
+	    Reimu::UniversalType Column(int nCol);
+	    size_t ColumnBytes(int nCol);
 
 	    int Reset();
 

@@ -145,3 +145,23 @@ int Reimu::SQLAutomator::SQLite3::PPB(Reimu::SQLAutomator::StatementType st, std
 	Bind();
 }
 
+Reimu::UniversalType Reimu::SQLAutomator::SQLite3::Column(int nCol) {
+	const char *cType = sqlite3_column_decltype(SQLite3Statement, nCol);
+
+	if (!cType)
+		throw Reimu::Exception(-2, "Can't determine column type");
+
+	if (strstr(cType, "INT"))
+		return UniversalType((int64_t)sqlite3_column_int64(SQLite3Statement, nCol));
+	else if (strstr(cType, "REAL") || strstr(cType, "FLOA") || strstr(cType, "DOUB"))
+		return UniversalType(sqlite3_column_double(SQLite3Statement, nCol));
+	else if (strstr(cType, "TEXT") || strstr(cType, "CHAR") || strstr(cType, "CLOB"))
+		return UniversalType(std::string((const char *)sqlite3_column_text(SQLite3Statement, nCol)));
+	else
+		return UniversalType((void *)sqlite3_column_blob(SQLite3Statement, nCol), (size_t)sqlite3_column_bytes(SQLite3Statement, nCol));
+}
+
+size_t Reimu::SQLAutomator::SQLite3::ColumnBytes(int nCol) {
+	return (size_t)sqlite3_column_bytes(SQLite3Statement, nCol);
+}
+

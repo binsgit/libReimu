@@ -73,6 +73,7 @@ namespace Reimu {
 
 	operator std::vector<uint8_t>();
 	operator std::string();
+	operator const char *();
 
     };
 }

@@ -44,3 +44,9 @@ Reimu::Exception::Exception(json_error_t *_json_error) {
 	}
 }
 
+Reimu::Exception::Exception(int custom_errno, std::string custom_errmsg) {
+	ErrNo = custom_errno;
+	Type = Custom;
+	Message = custom_errmsg;
+}
+

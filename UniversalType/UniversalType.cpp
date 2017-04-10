@@ -426,3 +426,10 @@ Reimu::UniversalType::operator std::vector<uint8_t>() {
 		throw Reimu::Exception(EINVAL);
 	return BlobStore;
 }
+
+Reimu::UniversalType::operator const char *() {
+	if (Type == BLOB)
+		return (const char *)&BlobStore[0];
+	else if (Type == STRING)
+		return StringStore.c_str();
+}
