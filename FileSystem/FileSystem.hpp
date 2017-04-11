@@ -15,30 +15,22 @@
     You should have received a copy of the GNU General Public License
     along with libReimu.  If not, see <http://www.gnu.org/licenses/>.
 
-    libReimu.hpp - Common include file for all modules.
+    FileSystem - File system related functions.
+
 */
-#ifndef LIBREIMU_LIBREIMU_HPP
-#define LIBREIMU_LIBREIMU_HPP
 
-#include <set>
-#include <vector>
-#include <string>
-#include <map>
-#include <unordered_map>
-#include <shared_mutex>
+#ifndef LIBREIMU_FILESYSTEM_HPP
+#define LIBREIMU_FILESYSTEM_HPP
 
-#include <cerrno>
-#include <cstring>
-#include <cinttypes>
+#include "../libReimu.hpp"
 
-#include <unistd.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+namespace Reimu {
+    class FileSystem {
+    public:
+	static bool Exist(std::string path);
+    };
 
 
+}
 
-#endif //LIBREIMU_LIBREIMU_HPP
+#endif //LIBREIMU_FILESYSTEM_HPP
