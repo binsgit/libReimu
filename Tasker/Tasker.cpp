@@ -24,7 +24,9 @@ Reimu::Tasker::Tasker() {
 
 }
 
-Reimu::Tasker::Tasker(int m, int h, int dom, int mon, int dow, void (*func)(void *), void *arg, bool run_immediately) {
+Reimu::Tasker::Tasker(std::string name, int m, int h, int dom, int mon, int dow, void (*func)(void *), void *arg, bool run_immediately) {
+	Name = name;
+
 	Minute = m;
 	Hour = h;
 	Day = dom;
@@ -34,7 +36,9 @@ Reimu::Tasker::Tasker(int m, int h, int dom, int mon, int dow, void (*func)(void
 	SetCommonArgs(func, arg, run_immediately);
 }
 
-Reimu::Tasker::Tasker(time_t interval, void (*func)(void *), void *arg, bool run_immediately) {
+Reimu::Tasker::Tasker(std::string name, time_t interval, void (*func)(void *), void *arg, bool run_immediately) {
+	Name = name;
+
 	Interval = interval;
 
 	SetCommonArgs(func, arg, run_immediately);
@@ -138,6 +142,14 @@ void Reimu::Tasker::CalcCountdown(Tasker *t) {
 		}
 		t->WeekOffsetCalibrated = 1;
 	}
+}
+
+bool const Reimu::Tasker::operator==(const Reimu::Tasker &o) const {
+	return Name == o.Name;
+}
+
+bool const Reimu::Tasker::operator<(const Reimu::Tasker &o) const {
+	return Name < o.Name;
 }
 
 

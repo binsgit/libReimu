@@ -36,6 +36,8 @@ namespace Reimu {
 	    FixedTime = 0x10, CountDown = 0x20
 	};
 
+	std::string Name;
+
 	struct tm CurrTime;
 	struct tm NextTime;
 
@@ -56,9 +58,12 @@ namespace Reimu {
 	pthread_t ThreadID;
 	pthread_attr_t ThreadAttr;
 
+	bool const operator== (const Reimu::Tasker &o) const;
+	bool const operator< (const Reimu::Tasker &o) const;
+
 	Tasker();
-	Tasker(int m, int h, int dom, int mon, int dow, void (*func)(void *), void *arg, bool run_immediately=1);
-	Tasker(time_t interval, void (*func)(void *), void *arg, bool run_immediately=1);
+	Tasker(std::string name, int m, int h, int dom, int mon, int dow, void (*func)(void *), void *arg, bool run_immediately=1);
+	Tasker(std::string name, time_t interval, void (*func)(void *), void *arg, bool run_immediately=1);
 
 	static void *CountDownThread(void *ptr);
 	static void *FixedTimeThread(void *ptr);
