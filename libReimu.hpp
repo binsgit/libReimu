@@ -17,6 +17,7 @@
 
     libReimu.hpp - Common include file for all modules.
 */
+
 #ifndef LIBREIMU_LIBREIMU_HPP
 #define LIBREIMU_LIBREIMU_HPP
 
