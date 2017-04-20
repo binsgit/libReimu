@@ -478,3 +478,7 @@ Reimu::UniversalType::operator std::string *() {
 
 	return &StringStore;
 }
+
+//Reimu::UniversalType::operator Reimu::UniversalType() {
+//	return this;
+//}

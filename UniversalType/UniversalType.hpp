@@ -91,6 +91,8 @@ namespace Reimu {
 	operator int64_t();
 	operator uint64_t();
 
+//	operator Reimu::UniversalType();
+
 	operator std::vector<uint8_t>();
 	operator std::vector<uint8_t> *();
 	operator std::string();
