@@ -29,6 +29,9 @@ namespace Reimu {
     private:
 	template<typename T> // Intentionally
 	UniversalType(T arg1);
+
+	template<typename T> // Intentionally
+	operator T();
     public:
 	enum Types {
 	    INT8 = 1, UINT8 = 2, INT16 = 3, UINT16 = 4, INT32 = 5, UINT32 = 6, INT64 = 7, UINT64 = 8, BOOL = 9,
@@ -65,24 +68,83 @@ namespace Reimu {
 	UniversalType(char *v, bool deepcopy=1);
 	UniversalType(void *v, size_t l, bool deepcopy=1);
 
-	explicit UniversalType(void *v);
+	UniversalType(void *v);
 
 	~UniversalType();
 
-	operator int64_t();
+	size_t Size();
 
-	explicit operator double();
-	explicit operator float();
-	explicit operator long double();
+	explicit operator Reimu::UniversalType (){
+		return this;
+	}
+
+	operator Reimu::UniversalType *(){
+		return this;
+	}
+
+	operator int64_t();
+	operator uint64_t();
+
+	operator int8_t() {
+		return (int8_t)int64_t();
+	}
+
+	operator uint8_t() {
+		return (uint8_t)uint64_t();
+	}
+
+	operator int16_t() {
+		return (int16_t)int64_t();
+	}
+
+	operator uint16_t() {
+		return (uint16_t)uint64_t();
+	}
+
+	operator int32_t() {
+		return (int32_t)int64_t();
+	}
+
+	operator uint32_t() {
+		return (uint32_t)uint64_t();
+	}
+
+//	operator short int() {
+//		return int16_t();
+//	}
+//
+//	operator unsigned short int() {
+//		return uint16_t();
+//	}
+//
+//	operator long int() {
+//		return int64_t();
+//	}
+//
+//	operator unsigned long int() {
+//		return uint64_t();
+//	}
+//
+	operator long long int() {
+		return int64_t();
+	}
+
+	operator unsigned long long int() {
+		return uint64_t();
+	}
+
+	operator double();
+	operator float();
+	operator long double();
 
 //	operator Reimu::UniversalType();
 
-	explicit operator std::vector<uint8_t>();
-	explicit operator std::vector<uint8_t> *();
-	explicit operator std::pair<void *, size_t>();
-	explicit operator std::string();
-	explicit operator std::string *();
-	explicit operator const char *();
+	operator std::vector<uint8_t>();
+	operator std::vector<uint8_t> *();
+	operator std::pair<void *, size_t>();
+	operator std::string();
+	operator std::string *();
+	operator const char *();
 	operator void *();
 
     };
