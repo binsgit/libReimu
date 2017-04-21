@@ -31,6 +31,11 @@ Reimu::IPEndPoint::IPEndPoint(int af) {
 	AddressFamily = af;
 }
 
+Reimu::IPEndPoint::IPEndPoint(std::pair<void *, size_t> inaddr, uint16_t port) {
+	IPEndPoint(inaddr.first, inaddr.second, port);
+}
+
+
 Reimu::IPEndPoint::IPEndPoint(void *inaddr, size_t inaddr_len, uint16_t port) {
 	if (inaddr_len == 4) {
 		AddressFamily = AF_INET;
@@ -173,4 +178,5 @@ bool const Reimu::IPEndPoint::operator<(const Reimu::IPEndPoint &o) const {
 		}
 	}
 }
+
 

@@ -38,13 +38,13 @@ int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs)
 
 int Reimu::SQLAutomator::SQLite3::Bind(size_t narg, Reimu::UniversalType thisval) {
 	if (thisval.Type < 10) {
-		return sqlite3_bind_int64(SQLite3Statement, (int)narg, thisval.Int64());
+		return sqlite3_bind_int64(SQLite3Statement, (int)narg, thisval);
 	} else if (thisval.Type > 10 && thisval.Type < 20) {
-		return sqlite3_bind_double(SQLite3Statement, (int)narg, thisval.Double());
+		return sqlite3_bind_double(SQLite3Statement, (int)narg, thisval);
 	} else if (thisval.Type == Reimu::UniversalType::Types::STRING) {
-		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.String().c_str(), (int)thisval.String().size(), SQLITE_STATIC);
+		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.operator std::string().c_str(), (int)thisval.operator std::string().size(), SQLITE_STATIC);
 	} else if (thisval.Type == Reimu::UniversalType::Types::BLOB) {
-		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, &thisval.Blob()[0], thisval.Blob().size(), SQLITE_STATIC);
+		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, &thisval.operator std::vector<uint8_t>()[0], thisval.operator std::vector<uint8_t>().size(), SQLITE_STATIC);
 	} else {
 		throw Reimu::Exception(EINVAL);
 	}
@@ -176,9 +176,9 @@ Reimu::UniversalType Reimu::SQLAutomator::SQLite3::Column(int nCol) {
 	else if (strstr(cType, "REAL") || strstr(cType, "FLOA") || strstr(cType, "DOUB"))
 		return UniversalType(sqlite3_column_double(SQLite3Statement, nCol));
 	else if (strstr(cType, "TEXT") || strstr(cType, "CHAR") || strstr(cType, "CLOB"))
-		return UniversalType(std::string((const char *)sqlite3_column_text(SQLite3Statement, nCol)));
+		return UniversalType((char *)sqlite3_column_text(SQLite3Statement, nCol), 0);
 	else
-		return UniversalType((void *)sqlite3_column_blob(SQLite3Statement, nCol), (size_t)sqlite3_column_bytes(SQLite3Statement, nCol));
+		return UniversalType((void *)sqlite3_column_blob(SQLite3Statement, nCol), (size_t)sqlite3_column_bytes(SQLite3Statement, nCol), 0);
 }
 
 size_t Reimu::SQLAutomator::SQLite3::ColumnBytes(int nCol) {

@@ -52,6 +52,7 @@ namespace Reimu {
 	IPEndPoint(sockaddr_in *sa4);
 	IPEndPoint(sockaddr_in6 *sa6);
 	IPEndPoint(void *inaddr, size_t inaddr_len, uint16_t port);
+	IPEndPoint(std::pair<void *, size_t> inaddr, uint16_t port);
 	IPEndPoint(std::string ip_str, uint16_t port);
 
 	int Connect(int ext_socket_type=0, int ext_socket_protocol=0);

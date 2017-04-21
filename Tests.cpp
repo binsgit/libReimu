@@ -19,8 +19,10 @@
 */
 
 #include <iostream>
+#include <cinttypes>
 
 #include "Base64/Base64.hpp"
+#include "UniversalType/UniversalType.hpp"
 
 using namespace std;
 using namespace Reimu;
@@ -28,7 +30,7 @@ using namespace Reimu;
 void Test_Base64(){
 	cout << "Testing Base64:\n";
 	Base64 encoder;
-	string raw = "我就眼睁睁地看着一个个新人小妹妹被这群乌合之众蛊惑把心态弄得差到不行。妻管严…女人的事情，能叫妻管严么！知乎上充斥着快活的空气。";
+	string raw = "The  expected  form of the (initial portion of the) string is optional leading white space as recognized by isspace(3), an optio";
 	cout << "Raw = " << raw << "\n";
 	string enced = encoder.Encode(raw);
 	cout << "Encoded = " << enced << "\n";
@@ -39,10 +41,90 @@ void Test_Base64(){
 		cout << "Test Failed!!!\n";
 		abort();
 	}
-	cout << "Base64 Test OK.\n";
+	cout << "Base64 Test OK.\n\n";
 }
+
+void Test_UniversalType(){
+	cout << "Testing UniversalType:\n";
+
+	int64_t myd64;
+	void *myptr;
+
+	printf("myut_u64 orig = %" PRIu16 "\n", 65535);
+	UniversalType myut_u16((uint16_t)65535);
+
+	printf("myut_u16 type = %d\n", myut_u16.Type);
+
+
+	myd64 = myut_u16;
+
+	printf("myut_u16 u64 = %" PRIu64 "\n", myd64);
+	printf("myut_u16 s64 = %" PRId64 "\n", myd64);
+	printf("myut_u16 auto to string = %s\n", myut_u16.operator std::string().c_str());
+
+	puts("");
+
+
+	printf("myut_u64 orig = %" PRIu64 "\n", 18446744073709551615UL);
+	UniversalType myut_u64(18446744073709551615UL);
+
+	printf("myut_u64 type = %d\n", myut_u64.Type);
+
+	myd64 = myut_u64;
+
+	printf("myut_u64 u64 = %" PRIu64 "\n", myd64);
+	printf("myut_u64 s64 = %" PRId64 "\n", myd64);
+	printf("myut_u64 auto to string = %s\n", myut_u64.operator std::string().c_str());
+
+	puts("");
+
+	printf("myut_s64 orig = %" PRId64 "\n", -9223372036854775807L);
+	UniversalType myut_s64(-9223372036854775807L);
+
+	printf("myut_s64 type = %d\n", myut_s64.Type);
+
+	myd64 = myut_s64;
+
+	printf("myut_s64 u64 = %" PRIu64 "\n", myd64);
+	printf("myut_s64 s64 = %" PRId64 "\n", myd64);
+	printf("myut_s64 auto to string = %s\n", myut_s64.operator std::string().c_str());
+
+	puts("");
+
+	void *someptr = malloc(0);
+
+	printf("myut_ptr orig = %p\n", someptr);
+	UniversalType myut_ptr(someptr);
+
+	printf("myut_ptr type = %d\n", myut_ptr.Type);
+
+	myptr = myut_ptr;
+
+	printf("myut_ptr ptr = %p\n", myptr);
+	printf("myut_ptr auto to string = %s\n", myut_ptr.operator std::string().c_str());
+
+	cout << "UniversalType Test OK.\n\n";
+
+	puts("");
+
+	string somestr = "18446744073709551615";
+
+	printf("myut_stru64max orig = \"%s\"\n", somestr.c_str());
+	UniversalType myut_stru64max(somestr);
+
+	printf("myut_stru64max type = %d\n", myut_stru64max.Type);
+
+	myd64 = myut_stru64max;
+
+	printf("myut_stru64max u64 = %" PRIu64 "\n", myd64);
+	printf("myut_stru64max auto to string = %s\n", myut_stru64max.operator std::string().c_str());
+
+	cout << "UniversalType Test OK.\n\n";
+}
+
 
 int main(){
 	Test_Base64();
+	Test_UniversalType();
 
 }
