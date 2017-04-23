@@ -42,8 +42,8 @@ namespace Reimu {
 
 	long double NumericStore;
 
-	std::vector<uint8_t> BlobStore;
-	std::string StringStore;
+	std::vector<uint8_t> *BlobStore = NULL;
+	std::string *StringStore = NULL;
 
 	size_t ShadowSize = 0;
 

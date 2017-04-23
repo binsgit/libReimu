@@ -28,6 +28,7 @@ namespace Reimu {
     class FileSystem {
     public:
 	static bool Exist(std::string path);
+	static bool MkDir_P(std::string path);
     };
 
 

@@ -30,7 +30,7 @@ set(SOURCE_FILES IPEndPoint/IPEndPoint.cpp IPEndPoint/IPEndPoint.hpp libReimu.hp
         TermColors/TermColors.cpp TermColors/TermColors.hpp)
 
 
-add_library(Reimu SHARED ${SOURCE_FILES})
+add_library(Reimu SHARED ${SOURCE_FILES} ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.hpp)
 
 add_library(Reimu_static STATIC ${SOURCE_FILES})
 

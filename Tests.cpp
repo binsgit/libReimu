@@ -22,6 +22,7 @@
 #include <cinttypes>
 
 #include "Base64/Base64.hpp"
+#include "ProgramOptions/ProgramOptions.hpp"
 #include "UniversalType/UniversalType.hpp"
 
 using namespace std;
@@ -42,6 +43,46 @@ void Test_Base64(){
 		abort();
 	}
 	cout << "Base64 Test OK.\n\n";
+}
+
+void Test_ProgramOptions(){
+	cout << "Testing ProgramOptions:\n";
+
+	char *myargv[10];
+
+	myargv[0] = "miao";
+	myargv[1] = "-c";
+	myargv[2] = "/etc/miao.cf";
+	myargv[3] = "-v";
+	myargv[4] = "-d";
+	myargv[5] = "-a";
+	myargv[6] = "OaO QwQ";
+	myargv[7] = "--";
+	myargv[8] = "喵喵喵";
+	myargv[9] = "哒哒哒";
+
+	cout << "Command: ";
+
+	for (int i=0; i<(sizeof(myargv)/sizeof(char *)); i++){
+		cout << myargv[i] << " ";
+	}
+
+	cout << "\n";
+
+	ProgramOptions po((sizeof(myargv)/sizeof(char *)), (char **)myargv);
+
+	cout << "Option -c = " << po.OptArg("c") << "\n";
+	printf("Flag -v found: %s\n", po.Flag("v") ? "true" : "false");
+	printf("Flag -d found: %s\n", po.Flag("d") ? "true" : "false");
+	printf("Flag -x found: %s\n", po.Flag("x") ? "true" : "false");
+	cout << "Option -a = " << po.OptArg("a") << "\n";
+
+	cout << "Trailing:\n";
+
+	for (auto &tt : po.Trailing)
+		cout << tt << "\n";
+
+	cout << "ProgramOptions Test OK.\n";
 }
 
 void Test_UniversalType(){
@@ -126,5 +167,6 @@ void Test_UniversalType(){
 int main(){
 	Test_Base64();
 	Test_UniversalType();
+	Test_ProgramOptions();
 
 }

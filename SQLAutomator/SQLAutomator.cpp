@@ -142,5 +142,7 @@ Reimu::SQLAutomator::SQLite3 Reimu::SQLAutomator::OpenSQLite3(int preload_stmt_t
 	if (preload_stmt_type != -1) {
 		ret.Statement = Statement(preload_stmt_type);
 	}
+
+	return ret;
 }
 

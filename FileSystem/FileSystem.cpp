@@ -25,3 +25,7 @@ bool Reimu::FileSystem::Exist(std::string path) {
 	struct stat OqO;
 	return stat(path.c_str(), &OqO) == 0;
 }
+
+bool Reimu::FileSystem::MkDir_P(std::string path) {
+	return false;
+}
