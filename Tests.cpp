@@ -54,7 +54,7 @@ void Test_ProgramOptions(){
 	myargv[1] = "-c";
 	myargv[2] = "/etc/miao.cf";
 	myargv[3] = "-v";
-	myargv[4] = "-d";
+	myargv[4] = "--moe";
 	myargv[5] = "-a";
 	myargv[6] = "OaO QwQ";
 	myargv[7] = "--";
@@ -73,7 +73,7 @@ void Test_ProgramOptions(){
 
 	cout << "Option -c = " << po.OptArg("c") << "\n";
 	printf("Flag -v found: %s\n", po.Flag("v") ? "true" : "false");
-	printf("Flag -d found: %s\n", po.Flag("d") ? "true" : "false");
+	printf("Flag --moe found: %s\n", po.Flag("moe") ? "true" : "false");
 	printf("Flag -x found: %s\n", po.Flag("x") ? "true" : "false");
 	cout << "Option -a = " << po.OptArg("a") << "\n";
 

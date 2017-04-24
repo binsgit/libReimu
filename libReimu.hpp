@@ -21,6 +21,7 @@
 #ifndef LIBREIMU_LIBREIMU_HPP
 #define LIBREIMU_LIBREIMU_HPP
 
+#include <iostream>
 #include <set>
 #include <vector>
 #include <string>

@@ -33,6 +33,7 @@ Reimu::Tasker::Tasker(std::string name, int m, int h, int dom, int mon, int dow,
 	Month = mon;
 	Week = dow;
 
+	Type = FixedTime;
 	SetCommonArgs(func, arg, run_immediately);
 }
 
@@ -41,6 +42,7 @@ Reimu::Tasker::Tasker(std::string name, time_t interval, void (*func)(void *), v
 
 	Interval = interval;
 
+	Type = CountDown;
 	SetCommonArgs(func, arg, run_immediately);
 }
 
@@ -50,6 +52,8 @@ void Reimu::Tasker::SetCommonArgs(void (*func)(void *), void *arg, bool run_imme
 	Func = func;
 	Arg = arg;
 
+	memset(&NextTime, 0, sizeof(tm));
+	memset(&CurrTime, 0, sizeof(tm));
 	pthread_attr_init(&ThreadAttr);
 	pthread_attr_setdetachstate(&ThreadAttr, PTHREAD_CREATE_DETACHED);
 }
@@ -106,34 +110,55 @@ void *Reimu::Tasker::FixedTimeThread(void *ptr) {
 void Reimu::Tasker::CalcCountdown(Tasker *t) {
 	time_t timenooow = time(NULL);
 
-	gmtime_r(&timenooow, &t->CurrTime);
 
-	if (t->Minute == -1)
-		t->NextTime.tm_min = t->CurrTime.tm_min+1;
-	else
+	localtime_r(&timenooow, &t->CurrTime);
+	memcpy(&t->NextTime, &t->CurrTime, sizeof(tm));
+
+	if (t->Minute == -1) {
+		if (t->CurrTime.tm_min != 59) {
+			t->NextTime.tm_min = t->CurrTime.tm_min + 1;
+			goto gentime;
+		} else {
+			t->NextTime.tm_min = 0;
+		}
+	} else {
 		t->NextTime.tm_min = t->Minute;
+	}
 
-	if (t->Hour == -1)
-		t->NextTime.tm_hour = t->CurrTime.tm_hour+1;
-	else
+	if (t->Hour == -1) {
+		if (t->CurrTime.tm_hour != 23) {
+			t->NextTime.tm_hour = t->CurrTime.tm_hour + 1;
+			goto gentime;
+		} else {
+			t->NextTime.tm_hour = 0;
+		}
+	} else {
 		t->NextTime.tm_hour = t->Hour;
+	}
 
 	if (t->Day == -1) {
-		if (t->WeekOffsetCalibrated)
-			t->NextTime.tm_mday += 7;
-		else
-			t->NextTime.tm_mday = t->CurrTime.tm_mday + 1;
+		if (t->NextTime.tm_mday) {
+			if (t->WeekOffsetCalibrated)
+				t->NextTime.tm_mday += 7;
+			else
+				t->NextTime.tm_mday = t->CurrTime.tm_mday + 1;
+		} else {
+			t->NextTime.tm_mday = t->CurrTime.tm_mday;
+		}
 	} else
 		t->NextTime.tm_mday = t->Day;
 
-	if (t->Month == -1)
-		t->NextTime.tm_mon = t->CurrTime.tm_mon+1;
-	else
-		t->NextTime.tm_mon = t->Month;
+//	if (t->Month == -1)
+//		if (t->NextTime.tm_mday == 30) {
+//		t->NextTime.tm_mon = t->CurrTime.tm_mon+1;
+//	else
+	// TODO
+	t->NextTime.tm_mon = t->CurrTime.tm_mon+1;
 
+	t->NextTime.tm_year = t->CurrTime.tm_year;
 
-
-	t->Interval = mktime(&t->NextTime);
+	gentime:
+	t->Interval = mktime(&t->NextTime)-timenooow;
 
 	if (t->Day == -1 && t->Week != -1) {
 		while (t->NextTime.tm_wday != t->Week) {
@@ -142,6 +167,9 @@ void Reimu::Tasker::CalcCountdown(Tasker *t) {
 		}
 		t->WeekOffsetCalibrated = 1;
 	}
+	fprintf(stderr, "[Tasker @ %p] Reimu::Tasker::CalcCountdown: %d-%d-%d %d:%d\n", t,
+		t->NextTime.tm_year+1900, t->NextTime.tm_mon, t->NextTime.tm_mday, t->NextTime.tm_hour, t->NextTime.tm_min);
+	fprintf(stderr, "[Tasker @ %p] Reimu::Tasker::CalcCountdown: %lu seconds\n", t, t->Interval);
 }
 
 bool const Reimu::Tasker::operator==(const Reimu::Tasker &o) const {
