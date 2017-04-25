@@ -32,19 +32,28 @@ Reimu::SQLAutomator::SQLite3::SQLite3(std::string db_uri, int flags, char *vfs, 
 }
 
 int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs) {
-	return sqlite3_open_v2(db_uri.c_str(), &SQLite3DB, flags, (const char *)vfs);
+	int ret = sqlite3_open_v2(db_uri.c_str(), &SQLite3DB, flags, (const char *)vfs);
+
+	fprintf(stderr, "[%s @ %p] db_uri=%s, ret=%d, sqlite3 *=%p\n", __PRETTY_FUNCTION__, this, db_uri.c_str(), ret, SQLite3DB);
+
+	if (ret != 0)
+		SQLite3DB = NULL;
+
+	return ret;
 }
 
 
 int Reimu::SQLAutomator::SQLite3::Bind(size_t narg, Reimu::UniversalType thisval) {
+	fprintf(stderr, "[SQLite3::Bind @ %p] Column=%zu Type=%d d64=%ld ptr=%p\n", this, narg, thisval.Type, *(int64_t *)&thisval.NumericStore, (void *)*(uintptr_t *)&thisval.NumericStore);
+
 	if (thisval.Type < 10) {
-		return sqlite3_bind_int64(SQLite3Statement, (int)narg, thisval);
+		return sqlite3_bind_int64(SQLite3Statement, (int)narg, thisval.operator int64_t());
 	} else if (thisval.Type > 10 && thisval.Type < 20) {
-		return sqlite3_bind_double(SQLite3Statement, (int)narg, thisval);
+		return sqlite3_bind_double(SQLite3Statement, (int)narg, thisval.operator double());
 	} else if (thisval.Type == Reimu::UniversalType::Types::STRING) {
-		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.operator std::string().c_str(), (int)thisval.operator std::string().size(), SQLITE_STATIC);
+		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.operator std::string().c_str(), (int)thisval.operator std::string().size(), SQLITE_TRANSIENT);
 	} else if (thisval.Type == Reimu::UniversalType::Types::BLOB) {
-		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, &thisval.operator std::vector<uint8_t>()[0], thisval.operator std::vector<uint8_t>().size(), SQLITE_STATIC);
+		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, &(thisval.BlobStore.operator[](0)), thisval.BlobStore.size(), SQLITE_TRANSIENT);
 	} else {
 		throw Reimu::Exception(EINVAL);
 	}
@@ -64,7 +73,13 @@ int Reimu::SQLAutomator::SQLite3::Prepare() {
 		sqlite3_finalize(SQLite3Statement);
 		SQLite3Statement = NULL;
 	}
-	return sqlite3_prepare(SQLite3DB, Statement.c_str(), (int)Statement.length(), &SQLite3Statement, NULL);
+	int ret = sqlite3_prepare(SQLite3DB, Statement.c_str(), (int)Statement.length(), &SQLite3Statement, NULL);
+
+	fprintf(stderr, "[%s @ %p] stmt_str=%s, ret=%d, s3=%p, s3stmt=%p\n", __PRETTY_FUNCTION__, this, Statement.c_str(),
+		ret, SQLite3DB, SQLite3Statement);
+
+
+	return ret;
 }
 
 int Reimu::SQLAutomator::SQLite3::Prepare(std::string stmt_str) {
@@ -81,6 +96,8 @@ int Reimu::SQLAutomator::SQLite3::Step() {
 }
 
 Reimu::SQLAutomator::SQLite3::~SQLite3() {
+	fprintf(stderr, "[%s @ %p] s3_stmt=%p, s3=%p\n", __PRETTY_FUNCTION__, this, SQLite3Statement, SQLite3DB);
+
 	if (SQLite3Statement)
 		sqlite3_finalize(SQLite3Statement);
 
@@ -118,7 +135,8 @@ int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatementType st, s
 
 		for (auto const &thisCol : kv) {
 			Statement += thisCol.first + ",";
-			Values.push_back(thisCol.second);
+
+			Values.push_back(*&(thisCol.second));
 		}
 
 		Statement.pop_back();

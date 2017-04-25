@@ -42,8 +42,8 @@ namespace Reimu {
 
 	long double NumericStore;
 
-	std::vector<uint8_t> *BlobStore = NULL;
-	std::string *StringStore = NULL;
+	std::vector<uint8_t> BlobStore;
+	std::string StringStore;
 
 	size_t ShadowSize = 0;
 
@@ -73,10 +73,6 @@ namespace Reimu {
 	~UniversalType();
 
 	size_t Size();
-
-	explicit operator Reimu::UniversalType (){
-		return this;
-	}
 
 	operator Reimu::UniversalType *(){
 		return this;

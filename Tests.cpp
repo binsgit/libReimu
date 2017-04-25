@@ -24,6 +24,7 @@
 #include "Base64/Base64.hpp"
 #include "ProgramOptions/ProgramOptions.hpp"
 #include "UniversalType/UniversalType.hpp"
+#include "SQLAutomator/SQLAutomator.hpp"
 
 using namespace std;
 using namespace Reimu;
@@ -163,10 +164,21 @@ void Test_UniversalType(){
 	cout << "UniversalType Test OK.\n\n";
 }
 
+SQLAutomator::SQLite3 *SQLite3wrapper(){
+	SQLAutomator::SQLite3 *ret = new SQLAutomator::SQLite3(":memory:");
+
+	return ret;
+}
+
+void Test_SQLite3(){
+	SQLAutomator::SQLite3 s3 = *SQLite3wrapper();
+
+	cerr << "Got SQlite3 ptr!!\n";
+}
 
 int main(){
 	Test_Base64();
 	Test_UniversalType();
 	Test_ProgramOptions();
-
+	Test_SQLite3();
 }
