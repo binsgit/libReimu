@@ -82,27 +82,27 @@ namespace Reimu {
 	operator uint64_t();
 
 	operator int8_t() {
-		return (int8_t)int64_t();
+		return (int8_t)operator int64_t();
 	}
 
 	operator uint8_t() {
-		return (uint8_t)uint64_t();
+		return (uint8_t)operator uint64_t();
 	}
 
 	operator int16_t() {
-		return (int16_t)int64_t();
+		return (int16_t)operator int64_t();
 	}
 
 	operator uint16_t() {
-		return (uint16_t)uint64_t();
+		return (uint16_t)operator uint64_t();
 	}
 
 	operator int32_t() {
-		return (int32_t)int64_t();
+		return (int32_t)operator int64_t();
 	}
 
 	operator uint32_t() {
-		return (uint32_t)uint64_t();
+		return (uint32_t)operator uint64_t();
 	}
 
 //	operator short int() {

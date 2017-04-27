@@ -31,32 +31,32 @@ Reimu::UniversalType::UniversalType(bool v) {
 
 Reimu::UniversalType::UniversalType(uint8_t v) {
 	Type = UINT8;
-	*((uint8_t *)&NumericStore) = v;
+	*((uint64_t *)&NumericStore) = (uint64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(int8_t v) {
 	Type = INT8;
-	*((int8_t *)&NumericStore) = v;
+	*((int64_t *)&NumericStore) = (int64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(uint16_t v) {
 	Type = UINT16;
-	*((uint16_t *)&NumericStore) = v;
+	*((int64_t *)&NumericStore) = (uint64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(int16_t v) {
 	Type = INT16;
-	*((int16_t *)&NumericStore) = v;
+	*((int64_t *)&NumericStore) = (int64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(uint32_t v) {
 	Type = UINT32;
-	*((uint32_t *)&NumericStore) = v;
+	*((uint64_t *)&NumericStore) = (uint64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(int32_t v) {
 	Type = INT32;
-	*((int32_t *)&NumericStore) = v;
+	*((int64_t *)&NumericStore) = (int64_t)v;
 }
 
 Reimu::UniversalType::UniversalType(uint64_t v) {
