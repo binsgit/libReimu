@@ -33,10 +33,10 @@ namespace Reimu {
 
 	int AddressFamily = AF_INET;
 
-	uint8_t *Addr;
-	sockaddr *SockAddr;
+	uint8_t *Addr = NULL;
+	sockaddr *SockAddr = NULL;
 
-	in_port_t *Port_N;
+	in_port_t *Port_N = NULL;
 	in_port_t Port = 0;
 
 	union {

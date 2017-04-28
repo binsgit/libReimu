@@ -103,11 +103,15 @@ Reimu::IPEndPoint::IPEndPoint(std::string ip_str, uint16_t port) {
 }
 
 std::string Reimu::IPEndPoint::ToString(Reimu::IPEndPoint::ArgType t) {
-	char sbuf[INET6_ADDRSTRLEN];
+	char sbuf[INET6_ADDRSTRLEN] = {0};
 
 	if (t == String_IP) {
+		memset(sbuf, 0, INET6_ADDRSTRLEN);
 		inet_ntop(AddressFamily, Addr, sbuf, INET6_ADDRSTRLEN);
-		return std::string(sbuf);
+		std::string ret;
+		ret += sbuf;
+		std::cout << "XXX: tostring: " << ret << "\n";
+		return ret;
 	} else {
 		if (!Port)
 			Port = ntohs(*Port_N);
