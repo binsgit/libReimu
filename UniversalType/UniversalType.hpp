@@ -42,8 +42,8 @@ namespace Reimu {
 
 	long double NumericStore;
 
-	std::vector<uint8_t> BlobStore;
-	std::string StringStore;
+	std::vector<uint8_t> *BlobStore = NULL;
+	std::string *StringStore = NULL;
 
 	size_t ShadowSize = 0;
 
@@ -70,6 +70,10 @@ namespace Reimu {
 
 	UniversalType(void *v);
 
+	UniversalType(const UniversalType &other);
+//	UniversalType(const UniversalType &&other);
+	UniversalType& operator= (UniversalType other);
+
 	~UniversalType();
 
 	size_t Size();
@@ -81,27 +85,27 @@ namespace Reimu {
 	operator int64_t();
 	operator uint64_t();
 
-	operator int8_t() {
+	inline operator int8_t() {
 		return (int8_t)operator int64_t();
 	}
 
-	operator uint8_t() {
+	inline operator uint8_t() {
 		return (uint8_t)operator uint64_t();
 	}
 
-	operator int16_t() {
+	inline operator int16_t() {
 		return (int16_t)operator int64_t();
 	}
 
-	operator uint16_t() {
+	inline operator uint16_t() {
 		return (uint16_t)operator uint64_t();
 	}
 
-	operator int32_t() {
+	inline operator int32_t() {
 		return (int32_t)operator int64_t();
 	}
 
-	operator uint32_t() {
+	inline operator uint32_t() {
 		return (uint32_t)operator uint64_t();
 	}
 
@@ -121,12 +125,12 @@ namespace Reimu {
 //		return uint64_t();
 //	}
 //
-	operator long long int() {
-		return int64_t();
+	inline operator long long int() {
+		return operator int64_t();
 	}
 
-	operator unsigned long long int() {
-		return uint64_t();
+	inline operator unsigned long long int() {
+		return operator uint64_t();
 	}
 
 	operator double();

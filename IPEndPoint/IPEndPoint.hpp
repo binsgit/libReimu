@@ -39,10 +39,12 @@ namespace Reimu {
 	in_port_t *Port_N = NULL;
 	in_port_t Port = 0;
 
-	union {
+	union sa_inetall {
 	    sockaddr_in v4;
 	    sockaddr_in6 v6;
-	} _SockAddr;
+	};
+
+	sa_inetall *_SockAddr = NULL;
 
 	int FD_Socket = -1;
 
@@ -57,11 +59,21 @@ namespace Reimu {
 	IPEndPoint(std::pair<void *, size_t> inaddr, uint16_t port);
 	IPEndPoint(std::string ip_str, uint16_t port);
 
+	IPEndPoint(const IPEndPoint &other);
+	IPEndPoint(const IPEndPoint &&other);
+	IPEndPoint& operator= (IPEndPoint other);
+
+	~IPEndPoint();
+
+
 	int Connect(int ext_socket_type=0, int ext_socket_protocol=0);
 	void Close();
 
 	std::string ToString();
 	std::string ToString(ArgType t);
+
+    private:
+	void InitFromRaw(void *inaddr, size_t inaddr_len, uint16_t port);
     };
 }
 

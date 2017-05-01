@@ -32,72 +32,86 @@ Reimu::IPEndPoint::IPEndPoint(int af) {
 }
 
 Reimu::IPEndPoint::IPEndPoint(std::pair<void *, size_t> inaddr, uint16_t port) {
-	IPEndPoint(inaddr.first, inaddr.second, port);
+	InitFromRaw(inaddr.first, inaddr.second, port);
 }
 
-
 Reimu::IPEndPoint::IPEndPoint(void *inaddr, size_t inaddr_len, uint16_t port) {
+	InitFromRaw(inaddr, inaddr_len, port);
+}
+
+void Reimu::IPEndPoint::InitFromRaw(void *inaddr, size_t inaddr_len, uint16_t port) {
+	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
+
 	if (inaddr_len == 4) {
 		AddressFamily = AF_INET;
-		_SockAddr.v4.sin_port = htons(port);
-		Port_N = &_SockAddr.v4.sin_port;
-		memcpy(&_SockAddr.v4.sin_addr, inaddr, 4);
-		SockAddr = (sockaddr *)&_SockAddr.v4;
-		Addr = (uint8_t *)&_SockAddr.v4.sin_addr;
-		_SockAddr.v4.sin_family = AF_INET;
+		_SockAddr->v4.sin_port = htons(port);
+		Port_N = &_SockAddr->v4.sin_port;
+		memcpy(&_SockAddr->v4.sin_addr, inaddr, 4);
+		SockAddr = (sockaddr *)&_SockAddr->v4;
+		Addr = (uint8_t *)&_SockAddr->v4.sin_addr;
+		_SockAddr->v4.sin_family = AF_INET;
 	} else if (inaddr_len == 16) {
 		AddressFamily = AF_INET6;
-		_SockAddr.v6.sin6_port = htons(port);
-		Port_N = &_SockAddr.v6.sin6_port;
-		memcpy(&_SockAddr.v6.sin6_addr, inaddr, 16);
-		SockAddr = (sockaddr *)&_SockAddr.v6;
-		Addr = (uint8_t *)&_SockAddr.v6.sin6_addr;
-		_SockAddr.v6.sin6_family = AF_INET6;
+		_SockAddr->v6.sin6_port = htons(port);
+		Port_N = &_SockAddr->v6.sin6_port;
+		memcpy(&_SockAddr->v6.sin6_addr, inaddr, 16);
+		SockAddr = (sockaddr *)&_SockAddr->v6;
+		Addr = (uint8_t *)&_SockAddr->v6.sin6_addr;
+		_SockAddr->v6.sin6_family = AF_INET6;
 	}
 
 	Port = port;
 }
 
 Reimu::IPEndPoint::IPEndPoint(sockaddr_in *sa4) {
+	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
+
 	AddressFamily = AF_INET;
-	memcpy(&_SockAddr.v4, sa4, sizeof(sockaddr_in));
-	Port_N = &_SockAddr.v4.sin_port;
-	Port = ntohs(_SockAddr.v4.sin_port);
-	SockAddr = (sockaddr *)&_SockAddr.v4;
-	Addr = (uint8_t *)&_SockAddr.v4.sin_addr;
-	_SockAddr.v4.sin_family = AF_INET;
+	memcpy(&_SockAddr->v4, sa4, sizeof(sockaddr_in));
+	Port_N = &_SockAddr->v4.sin_port;
+	Port = ntohs(_SockAddr->v4.sin_port);
+	SockAddr = (sockaddr *)&_SockAddr->v4;
+	Addr = (uint8_t *)&_SockAddr->v4.sin_addr;
+	_SockAddr->v4.sin_family = AF_INET;
 }
 
 Reimu::IPEndPoint::IPEndPoint(sockaddr_in6 *sa6) {
+	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
+
 	AddressFamily = AF_INET6;
-	memcpy(&_SockAddr.v6, sa6, sizeof(sockaddr_in6));
-	Port_N = &_SockAddr.v6.sin6_port;
-	Port = ntohs(_SockAddr.v6.sin6_port);
-	SockAddr = (sockaddr *)&_SockAddr.v6;
-	Addr = (uint8_t *)&_SockAddr.v6.sin6_addr;
-	_SockAddr.v6.sin6_family = AF_INET6;
+	memcpy(&_SockAddr->v6, sa6, sizeof(sockaddr_in6));
+	Port_N = &_SockAddr->v6.sin6_port;
+	Port = ntohs(_SockAddr->v6.sin6_port);
+	SockAddr = (sockaddr *)&_SockAddr->v6;
+	Addr = (uint8_t *)&_SockAddr->v6.sin6_addr;
+	_SockAddr->v6.sin6_family = AF_INET6;
 }
 
 Reimu::IPEndPoint::IPEndPoint(std::string ip_str, uint16_t port) {
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] ip_str=%s, port=%u\n", __PRETTY_FUNCTION__, this, ip_str.c_str(), port);
+#endif
+	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
 
 	if (strchr(ip_str.c_str(), ':')) {
 		AddressFamily = AF_INET6;
-		Addr = (uint8_t *)&_SockAddr.v6.sin6_addr;
-		Port_N = &_SockAddr.v6.sin6_port;
-		SockAddr = (sockaddr *)&_SockAddr.v6;
-		_SockAddr.v6.sin6_family = AF_INET6;
+		Addr = (uint8_t *)&_SockAddr->v6.sin6_addr;
+		Port_N = &_SockAddr->v6.sin6_port;
+		SockAddr = (sockaddr *)&_SockAddr->v6;
+		_SockAddr->v6.sin6_family = AF_INET6;
 	} else {
 		AddressFamily = AF_INET;
-		Addr = (uint8_t *)&_SockAddr.v4.sin_addr;
-		Port_N = &_SockAddr.v4.sin_port;
-		SockAddr = (sockaddr *)&_SockAddr.v4;
-		_SockAddr.v4.sin_family = AF_INET;
+		Addr = (uint8_t *)&_SockAddr->v4.sin_addr;
+		Port_N = &_SockAddr->v4.sin_port;
+		SockAddr = (sockaddr *)&_SockAddr->v4;
+		_SockAddr->v4.sin_family = AF_INET;
 	}
 
 	inet_pton(AddressFamily, ip_str.c_str(), Addr);
 
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] addr_hex = %02x%02x%02x%02x\n", __PRETTY_FUNCTION__, this, Addr[0], Addr[1], Addr[2], Addr[3]);
+#endif
 	*Port_N = htons(port);
 	Port = port;
 }
@@ -110,7 +124,9 @@ std::string Reimu::IPEndPoint::ToString(Reimu::IPEndPoint::ArgType t) {
 		inet_ntop(AddressFamily, Addr, sbuf, INET6_ADDRSTRLEN);
 		std::string ret;
 		ret += sbuf;
+#ifdef Reimu_DEBUG
 		std::cout << "XXX: tostring: " << ret << "\n";
+#endif
 		return ret;
 	} else {
 		if (!Port)
@@ -139,7 +155,7 @@ int Reimu::IPEndPoint::Connect(int ext_socket_type, int ext_socket_protocol) {
 	}
 
 	if ( 0 != connect(FD_Socket, (AddressFamily == AF_INET6) ?
-				     (struct sockaddr *)&_SockAddr.v6 : (struct sockaddr *)&_SockAddr.v4,
+				     (struct sockaddr *)&_SockAddr->v6 : (struct sockaddr *)&_SockAddr->v4,
 			  (AddressFamily == AF_INET6) ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in)) ) {
 		throw Reimu::Exception(errno);
 	}
@@ -153,9 +169,9 @@ void Reimu::IPEndPoint::Close() {
 
 bool const Reimu::IPEndPoint::operator==(const Reimu::IPEndPoint &o) const {
 	if (AddressFamily == AF_INET6) {
-		return 0 == memcmp(&_SockAddr.v6, &o._SockAddr.v6, sizeof(sockaddr_in6));
+		return 0 == memcmp(&_SockAddr->v6, &o._SockAddr->v6, sizeof(sockaddr_in6));
 	} else {
-		return 0 == memcmp(&_SockAddr.v4, &o._SockAddr.v4, sizeof(sockaddr_in));
+		return 0 == memcmp(&_SockAddr->v4, &o._SockAddr->v4, sizeof(sockaddr_in));
 	}
 }
 
@@ -201,6 +217,60 @@ bool const Reimu::IPEndPoint::operator<(const Reimu::IPEndPoint &o) const {
 			return be16toh(*Port_N) < be16toh(*o.Port_N);
 		}
 	}
+}
+
+Reimu::IPEndPoint &Reimu::IPEndPoint::operator=(Reimu::IPEndPoint other) {
+	fprintf(stderr, "libReimu::IPEndPoint: move=: this=%p, old=%p\n", this, other);
+
+	_SockAddr = other._SockAddr;
+	AddressFamily = other.AddressFamily;
+	Port = other.Port;
+	FD_Socket = other.FD_Socket;
+	Port_N = other.Port_N;
+	Addr = other.Addr;
+	SockAddr = other.SockAddr;
+	other._SockAddr = NULL;
+
+	return *this;
+}
+
+Reimu::IPEndPoint::~IPEndPoint() {
+	if (_SockAddr)
+		free(_SockAddr);
+}
+
+Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &other) {
+	fprintf(stderr, "libReimu::IPEndPoint: copy: this=%p, old=%p\n", this, other);
+
+	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
+	memcpy(_SockAddr, other._SockAddr, sizeof(_SockAddr));
+	AddressFamily = other.AddressFamily;
+	Port = other.Port;
+	FD_Socket = other.FD_Socket;
+
+	if (AddressFamily == AF_INET) {
+		Port_N = &_SockAddr->v4.sin_port;
+		SockAddr = (sockaddr *) &_SockAddr->v4;
+		Addr = (uint8_t *) &_SockAddr->v4.sin_addr;
+	} else {
+		Port_N = &_SockAddr->v6.sin6_port;
+		SockAddr = (sockaddr *) &_SockAddr->v6;
+		Addr = (uint8_t *) &_SockAddr->v6.sin6_addr;
+	}
+
+}
+
+Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &&other) {
+	fprintf(stderr, "libReimu::IPEndPoint: move: this=%p, old=%p\n", this, other);
+
+	_SockAddr = other._SockAddr;
+	AddressFamily = other.AddressFamily;
+	Port = other.Port;
+	FD_Socket = other.FD_Socket;
+	Port_N = other.Port_N;
+	Addr = other.Addr;
+	SockAddr = other.SockAddr;
+
 }
 
 

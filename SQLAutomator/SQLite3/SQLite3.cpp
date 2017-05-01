@@ -34,7 +34,9 @@ Reimu::SQLAutomator::SQLite3::SQLite3(std::string db_uri, int flags, char *vfs, 
 int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs) {
 	int ret = sqlite3_open_v2(db_uri.c_str(), &SQLite3DB, flags, (const char *)vfs);
 
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] db_uri=%s, ret=%d, sqlite3 *=%p\n", __PRETTY_FUNCTION__, this, db_uri.c_str(), ret, SQLite3DB);
+#endif
 
 	if (ret != 0)
 		SQLite3DB = NULL;
@@ -44,16 +46,17 @@ int Reimu::SQLAutomator::SQLite3::Open(std::string db_uri, int flags, char *vfs)
 
 
 int Reimu::SQLAutomator::SQLite3::Bind(size_t narg, Reimu::UniversalType thisval) {
+#ifndef Reimu_DEBUG
 	fprintf(stderr, "[SQLite3::Bind @ %p] Column=%zu Type=%d d64=%ld ptr=%p\n", this, narg, thisval.Type, *(int64_t *)&thisval.NumericStore, (void *)*(uintptr_t *)&thisval.NumericStore);
-
+#endif
 	if (thisval.Type < 10) {
 		return sqlite3_bind_int64(SQLite3Statement, (int)narg, thisval.operator int64_t());
 	} else if (thisval.Type > 10 && thisval.Type < 20) {
 		return sqlite3_bind_double(SQLite3Statement, (int)narg, thisval.operator double());
 	} else if (thisval.Type == Reimu::UniversalType::Types::STRING) {
-		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.operator std::string().c_str(), (int)thisval.operator std::string().size(), SQLITE_TRANSIENT);
+		return sqlite3_bind_text(SQLite3Statement, (int)narg, thisval.StringStore->c_str(), (int)thisval.StringStore->size(), SQLITE_TRANSIENT);
 	} else if (thisval.Type == Reimu::UniversalType::Types::BLOB) {
-		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, &(thisval.BlobStore.operator[](0)), thisval.BlobStore.size(), SQLITE_TRANSIENT);
+		return sqlite3_bind_blob64(SQLite3Statement, (int)narg, thisval.BlobStore->data(), thisval.BlobStore->size(), SQLITE_TRANSIENT);
 	} else {
 		throw Reimu::Exception(EINVAL);
 	}
@@ -74,9 +77,10 @@ int Reimu::SQLAutomator::SQLite3::Prepare() {
 		SQLite3Statement = NULL;
 	}
 	int ret = sqlite3_prepare(SQLite3DB, Statement.c_str(), (int)Statement.length(), &SQLite3Statement, NULL);
-
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] stmt_str=%s, ret=%d, s3=%p, s3stmt=%p\n", __PRETTY_FUNCTION__, this, Statement.c_str(),
 		ret, SQLite3DB, SQLite3Statement);
+#endif
 
 
 	return ret;
@@ -96,7 +100,9 @@ int Reimu::SQLAutomator::SQLite3::Step() {
 }
 
 Reimu::SQLAutomator::SQLite3::~SQLite3() {
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] s3_stmt=%p, s3=%p\n", __PRETTY_FUNCTION__, this, SQLite3Statement, SQLite3DB);
+#endif
 
 	if (SQLite3Statement)
 		sqlite3_finalize(SQLite3Statement);
@@ -136,7 +142,7 @@ int Reimu::SQLAutomator::SQLite3::Parse(Reimu::SQLAutomator::StatementType st, s
 		for (auto const &thisCol : kv) {
 			Statement += thisCol.first + ",";
 
-			Values.push_back(*&(thisCol.second));
+			Values.push_back(thisCol.second);
 		}
 
 		Statement.pop_back();

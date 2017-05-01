@@ -86,19 +86,22 @@ Reimu::UniversalType::UniversalType(long double v) {
 
 Reimu::UniversalType::UniversalType(std::string v) {
 	Type = STRING;
-	StringStore.operator=(v);
+	StringStore = new std::string();
+	StringStore->operator+=(v);
 }
 
 Reimu::UniversalType::UniversalType(std::vector<uint8_t> v) {
 	Type = BLOB;
-	BlobStore.operator=(v);
+	BlobStore = new std::vector<uint8_t>();
+	BlobStore->operator=(v);
 }
 
 Reimu::UniversalType::UniversalType(char *v, bool deepcopy) {
 	Type = STRING;
 
 	if (deepcopy) {
-		StringStore.operator+=(v);
+		StringStore = new std::string();
+		StringStore->operator+=(v);
 	} else {
 		*((int64_t *)&NumericStore) = (int64_t)v;
 		ShadowSize = strlen(v);
@@ -114,18 +117,26 @@ Reimu::UniversalType::UniversalType(void *v) {
 Reimu::UniversalType::UniversalType(void *v, size_t l, bool deepcopy) {
 	Type = BLOB;
 
+#ifdef Reimu_DEBUG
 	fprintf(stderr, "[%s @ %p] v=%p, l=%zu\n", __PRETTY_FUNCTION__, this, v, l);
+#endif
+
 	if (!deepcopy) {
 		ShadowSize = l;
 		*((int64_t *)&NumericStore) = (int64_t)v;
 	} else {
-		BlobStore.insert(BlobStore.begin(), (uint8_t *) v, (uint8_t *) v + l);
+		BlobStore = new std::vector<uint8_t>();
+		BlobStore->insert(BlobStore->begin(), (uint8_t *) v, (uint8_t *) v + l);
 	}
 }
 
 
 Reimu::UniversalType::~UniversalType() {
+	if (BlobStore)
+		delete BlobStore;
 
+	if (StringStore)
+		delete StringStore;
 
 }
 
@@ -136,11 +147,11 @@ Reimu::UniversalType::operator uint64_t() {
 		if (Type < 20) {
 			return (uint64_t) NumericStore;
 		} else if (Type == STRING) {
-			if (StringStore.size())
-				if (StringStore.operator[](0) == '-')
-					return strtoll(StringStore.c_str(), NULL, 10);
+			if (StringStore->size())
+				if (StringStore->operator[](0) == '-')
+					return strtoll(StringStore->c_str(), NULL, 10);
 				else
-					return (int64_t)strtoull(StringStore.c_str(), NULL, 10);
+					return (int64_t)strtoull(StringStore->c_str(), NULL, 10);
 		} else {
 			throw Reimu::Exception(EINVAL);
 		}
@@ -154,11 +165,11 @@ Reimu::UniversalType::operator int64_t() {
 		if (Type < 20) {
 			return (int64_t) NumericStore;
 		} else if (Type == STRING) {
-			if (StringStore.size())
-				if (StringStore.operator[](0) == '-')
-					return strtoll(StringStore.c_str(), NULL, 10);
+			if (StringStore->size())
+				if (StringStore->operator[](0) == '-')
+					return strtoll(StringStore->c_str(), NULL, 10);
 				else
-					return (int64_t)strtoull(StringStore.c_str(), NULL, 10);
+					return (int64_t)strtoull(StringStore->c_str(), NULL, 10);
 		} else {
 			throw Reimu::Exception(EINVAL);
 		}
@@ -173,8 +184,8 @@ Reimu::UniversalType::operator double() {
 		if (Type < 20) {
 			return (double)NumericStore;
 		} else if (Type == STRING) {
-			if (StringStore.size())
-				return strtod(StringStore.c_str(), NULL);
+			if (StringStore->size())
+				return strtod(StringStore->c_str(), NULL);
 			else
 				throw Reimu::Exception(EINVAL);
 		} else {
@@ -190,8 +201,8 @@ Reimu::UniversalType::operator float() {
 		if (Type < 20) {
 			return (float)NumericStore;
 		} else if (Type == STRING) {
-			if (StringStore.size())
-			return strtof(StringStore.c_str(), NULL);
+			if (StringStore->size())
+				return strtof(StringStore->c_str(), NULL);
 			else
 				throw Reimu::Exception(EINVAL);
 		} else {
@@ -207,8 +218,8 @@ Reimu::UniversalType::operator long double() {
 		if (Type < 20) {
 			return NumericStore;
 		} else if (Type == STRING) {
-			if (StringStore.size())
-			return strtold(StringStore.c_str(), NULL);
+			if (StringStore->size())
+				return strtold(StringStore->c_str(), NULL);
 			else
 				throw Reimu::Exception(EINVAL);
 		} else {
@@ -231,7 +242,7 @@ Reimu::UniversalType::operator std::string() {
 			if (ShadowSize)
 				return std::string((char *)*(int64_t *)&NumericStore);
 			else
-				return StringStore;
+				return *StringStore;
 		} else if (Type == PTR_VOID) {
 			char sbuf[32] = {0};
 			snprintf(sbuf, 31, "%p", (void *)*(int64_t *)&NumericStore);
@@ -250,7 +261,7 @@ Reimu::UniversalType::operator std::vector<uint8_t>() {
 	if (ShadowSize)
 		return std::vector<uint8_t>((uint8_t *)*(int64_t *)&NumericStore, (uint8_t *)*(int64_t *)&NumericStore+ShadowSize);
 
-	return BlobStore;
+	return *BlobStore;
 }
 
 Reimu::UniversalType::operator const char *() {
@@ -260,7 +271,9 @@ Reimu::UniversalType::operator const char *() {
 		if (ShadowSize)
 			return (const char *)*(int64_t *)&NumericStore;
 		else
-			return StringStore.c_str();
+			return StringStore->c_str();
+	else
+		return (const char *)"!!conversion error!!";
 }
 
 Reimu::UniversalType::operator void *() {
@@ -268,25 +281,25 @@ Reimu::UniversalType::operator void *() {
 		return (void *)*((int64_t *)&NumericStore);
 
 	if (Type == BLOB)
-			return &BlobStore[0];
+		return &BlobStore[0];
 
 
 	if (Type == STRING)
-		return (void *)StringStore.c_str();
+		return (void *)StringStore->c_str();
 }
 
 Reimu::UniversalType::operator std::vector<uint8_t> *() {
 	if (Type != BLOB)
 		throw Reimu::Exception(EINVAL);
 
-	return &BlobStore;
+	return BlobStore;
 }
 
 Reimu::UniversalType::operator std::string *() {
 	if (Type != STRING)
 		throw Reimu::Exception(EINVAL);
 
-	return &StringStore;
+	return StringStore;
 }
 
 Reimu::UniversalType::operator std::pair<void *, size_t>() {
@@ -296,7 +309,7 @@ Reimu::UniversalType::operator std::pair<void *, size_t>() {
 	if (ShadowSize)
 		return std::pair<void *, size_t>((void *)*((int64_t *)&NumericStore), ShadowSize);
 
-	return std::pair<void *, size_t>(&(BlobStore[0]), BlobStore.size());
+	return std::pair<void *, size_t>(BlobStore->data(), BlobStore->size());
 }
 
 size_t Reimu::UniversalType::Size() {
@@ -304,10 +317,10 @@ size_t Reimu::UniversalType::Size() {
 		return ShadowSize;
 
 	if (Type == BLOB)
-		return BlobStore.size();
+		return BlobStore->size();
 
 	if (Type == STRING)
-		return StringStore.size();
+		return StringStore->size();
 
 	switch (Type) {
 		case INT8:
@@ -338,8 +351,52 @@ size_t Reimu::UniversalType::Size() {
 
 }
 
+Reimu::UniversalType::UniversalType(const Reimu::UniversalType &other) {
+//	fprintf(stderr, "libReimu::UniversalType: Copy operator called!!! Current=%p, Old=%p\n", this, old_instance);
 
+	Type = other.Type;
+	memcpy(&NumericStore, &other.NumericStore, sizeof(long double));
+	ShadowSize = other.ShadowSize;
 
-//Reimu::UniversalType::operator Reimu::UniversalType() {
-//	return this;
+	if (other.Type == STRING) {
+		StringStore = new std::string();
+		StringStore->insert(StringStore->begin(), other.StringStore->begin(), other.StringStore->end());
+	}
+
+	if (other.Type == BLOB) {
+		BlobStore = new std::vector<uint8_t>();
+		BlobStore->insert(BlobStore->begin(), other.BlobStore->begin(), other.BlobStore->end());
+	}
+
+}
+
+//Reimu::UniversalType::UniversalType(const Reimu::UniversalType &&other) {
+//	Type = other.Type;
+//
+//	NumericStore = other.NumericStore;
+//
+//	if (other.Type == STRING)
+//		StringStore = other.StringStore;
+//
+//	if (other.Type == BLOB)
+//		BlobStore = other.BlobStore;
+//
+//	ShadowSize = other.ShadowSize;
 //}
+
+Reimu::UniversalType &Reimu::UniversalType::operator=(Reimu::UniversalType other) {
+	Type = other.Type;
+	memcpy(&NumericStore, &other.NumericStore, sizeof(long double));
+	ShadowSize = other.ShadowSize;
+
+	if (other.Type == STRING) {
+		StringStore = other.StringStore;
+		other.StringStore = NULL;
+	}
+
+	if (other.Type == BLOB) {
+		BlobStore = other.BlobStore;
+		other.BlobStore = NULL;
+	}
+}
+
