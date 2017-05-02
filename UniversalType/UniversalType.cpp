@@ -108,6 +108,17 @@ Reimu::UniversalType::UniversalType(char *v, bool deepcopy) {
 	}
 }
 
+Reimu::UniversalType::UniversalType(const char *v, bool deepcopy) {
+	Type = STRING;
+
+	if (deepcopy) {
+		StringStore = new std::string();
+		StringStore->operator+=(v);
+	} else {
+		*((int64_t *)&NumericStore) = (int64_t)v;
+		ShadowSize = strlen(v);
+	}
+}
 
 Reimu::UniversalType::UniversalType(void *v) {
 	*((int64_t *)&NumericStore) = (int64_t)v;
@@ -399,4 +410,6 @@ Reimu::UniversalType &Reimu::UniversalType::operator=(Reimu::UniversalType other
 		other.BlobStore = NULL;
 	}
 }
+
+
 

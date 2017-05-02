@@ -21,11 +21,13 @@
 #ifndef LIBREIMU_LIBREIMU_HPP
 #define LIBREIMU_LIBREIMU_HPP
 
-#include <iostream>
+
 #include <set>
+#include <map>
 #include <vector>
 #include <string>
-#include <map>
+#include <sstream>
+#include <iostream>
 #include <unordered_map>
 #include <shared_mutex>
 

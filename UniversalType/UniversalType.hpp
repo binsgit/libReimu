@@ -65,13 +65,13 @@ namespace Reimu {
 
 	UniversalType(std::string v);
 	UniversalType(std::vector<uint8_t> v);
+	UniversalType(const char *v, bool deepcopy=1);
 	UniversalType(char *v, bool deepcopy=1);
 	UniversalType(void *v, size_t l, bool deepcopy=1);
 
 	UniversalType(void *v);
 
 	UniversalType(const UniversalType &other);
-//	UniversalType(const UniversalType &&other);
 	UniversalType& operator= (UniversalType other);
 
 	~UniversalType();
@@ -109,22 +109,6 @@ namespace Reimu {
 		return (uint32_t)operator uint64_t();
 	}
 
-//	operator short int() {
-//		return int16_t();
-//	}
-//
-//	operator unsigned short int() {
-//		return uint16_t();
-//	}
-//
-//	operator long int() {
-//		return int64_t();
-//	}
-//
-//	operator unsigned long int() {
-//		return uint64_t();
-//	}
-//
 	inline operator long long int() {
 		return operator int64_t();
 	}

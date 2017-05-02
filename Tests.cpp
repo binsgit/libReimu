@@ -19,15 +19,18 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <cinttypes>
 
 #include "Base64/Base64.hpp"
-#include "ProgramOptions/ProgramOptions.hpp"
-#include "UniversalType/UniversalType.hpp"
+#include "Logging/Logging.hpp"
 #include "SQLAutomator/SQLAutomator.hpp"
+#include "UniversalType/UniversalType.hpp"
+#include "ProgramOptions/ProgramOptions.hpp"
 
 using namespace std;
 using namespace Reimu;
+using namespace Kanna;
 
 void Test_Base64(){
 	cout << "Testing Base64:\n";
@@ -176,9 +179,25 @@ void Test_SQLite3(){
 	cerr << "Got SQlite3 ptr!!\n";
 }
 
+void Test_Logging(){
+	cout << "Testing Logging:\n";
+
+	Logging logger("/tmp/kanna_logging_test.log");
+
+	logger.Log(10, "喵喵喵");
+	logger.Log(20, "哒哒哒%s", "！");
+	logger.Log(30, "OqO");
+	logger.Log(40, "=、=");
+	logger.Log(50, "当然是选择原谅她啊");
+	logger.Log(60, "mdzzzzzzzzz");
+
+	cout << "Logging Test OK.\n\n";
+}
+
 int main(){
 	Test_Base64();
 	Test_UniversalType();
 	Test_ProgramOptions();
 	Test_SQLite3();
+	Test_Logging();
 }
