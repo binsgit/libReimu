@@ -54,6 +54,7 @@ void Kanna::Logging::Log(int type, const char *format, ...) {
 	pthread_mutex_lock(&Lock);
 	fprintf(LogFile, "[%s] ", timestr);
 	fwrite(tmpbuf, 1, tmpbuf_size, LogFile);
+	fflush(LogFile);
 	pthread_mutex_unlock(&Lock);
 
 	free(tmpbuf);
