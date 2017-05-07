@@ -27,7 +27,7 @@ set(SOURCE_FILES IPEndPoint/IPEndPoint.cpp IPEndPoint/IPEndPoint.hpp libReimu.hp
         Base64/Base64.cpp Base64/Base64.hpp
         FileSystem/FileSystem.cpp FileSystem/FileSystem.hpp
         StrStack/StrStack.cpp StrStack/StrStack.hpp
-        TermColors/TermColors.cpp TermColors/TermColors.hpp DateTime/DateTime.cpp DateTime/DateTime.hpp Logging/Logging.cpp Logging/Logging.hpp)
+        TermColors/TermColors.cpp TermColors/TermColors.hpp DateTime/DateTime.cpp DateTime/DateTime.hpp Logging/Logging.cpp Logging/Logging.hpp StringOps/StringOps.cpp StringOps/StringOps.hpp)
 
 
 add_library(Reimu SHARED ${SOURCE_FILES} ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.hpp)
