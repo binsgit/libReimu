@@ -49,3 +49,29 @@ Reimu::StringOps::Explode(const char *haystack, size_t haystack_len, const char 
 
 	return ret;
 }
+
+std::vector<uint8_t>
+Reimu::StringOps::EncodingConvert(const void *input, size_t input_len, const char *enc_from, const char *enc_to) {
+	std::vector<uint8_t> ret;
+
+	size_t out_len = 4*(input_len+4);
+	ret.resize(out_len);
+	char *outbuf = (char *)ret.data();
+
+	iconv_t ictx = iconv_open(enc_to, enc_from);
+
+	size_t processed_len;
+
+
+	while ((processed_len = iconv(ictx, (char **)&input, &input_len, &outbuf, &out_len)) != -1) {
+//		std::cerr << "Reimu::StringOps::EncodingConvert: Processed " << processed_len << "chars\n";
+		if (input_len == 0)
+			break;
+	}
+
+	ret.resize(ret.size()-out_len);
+
+	iconv_close(ictx);
+
+	return ret;
+}
