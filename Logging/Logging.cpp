@@ -51,11 +51,13 @@ void Kanna::Logging::Log(int type, const char *format, ...) {
 	fprintf(stderr, "\e[01;36m[%s]\e[0m ", timestr);
 	fprintf(stderr, "\e[01;3%sm%s\e[0m", color, tmpbuf);
 
-	pthread_mutex_lock(&Lock);
-	fprintf(LogFile, "[%s] ", timestr);
-	fwrite(tmpbuf, 1, tmpbuf_size, LogFile);
-	fflush(LogFile);
-	pthread_mutex_unlock(&Lock);
+	if (LogFile) {
+		pthread_mutex_lock(&Lock);
+		fprintf(LogFile, "[%s] ", timestr);
+		fwrite(tmpbuf, 1, tmpbuf_size, LogFile);
+		fflush(LogFile);
+		pthread_mutex_unlock(&Lock);
+	}
 
 	free(tmpbuf);
 }
