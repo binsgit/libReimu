@@ -31,34 +31,43 @@ bool Reimu::FileSystem::MkDir_P(std::string path) {
 	return false;
 }
 
-inline void Reimu::FileSystem::listdir(const char *base_path, std::vector<std::string> &list, ssize_t plen) {
-		DIR *dir;
-		struct dirent *entry;
+inline void Reimu::FileSystem::listdir(const char *base_path, std::vector<std::string> &list, size_t plen) {
+	DIR *dir;
+	struct dirent *entry;
 
-		if (!(dir = opendir(base_path)))
-			return;
-		if (!(entry = readdir(dir)))
-			return;
+	struct stat path_stat;
+	stat(base_path, &path_stat);
+	if (S_ISREG(path_stat.st_mode)) {
+		list.push_back(base_path);
+		return;
+	}
 
-		char path_buf[1024+plen];
+	if (!(dir = opendir(base_path)))
+		return;
+	if (!(entry = readdir(dir)))
+		return;
 
-		do {
-			if (entry->d_type == DT_DIR) {
-				int len = snprintf(path_buf, sizeof(path_buf)-1, "%s/%s", base_path, entry->d_name);
-				path_buf[len] = 0;
-				if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-					continue;
-				listdir(path_buf, list, len);
-			}
-			else {
-				if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-					continue;
-				int len = snprintf(path_buf, sizeof(path_buf)-1, "%s/%s", base_path, entry->d_name);
-				path_buf[len] = 0;
-				list.push_back(path_buf);
-			}
-		} while (entry = readdir(dir));
-		closedir(dir);
+	size_t path_buflen = 1024+plen;
+	char path_buf[path_buflen];
+
+	do {
+		if (entry->d_type == DT_DIR) {
+			int len = snprintf(path_buf, path_buflen-1, "%s/%s", base_path, entry->d_name);
+			path_buf[len] = 0;
+			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+				continue;
+			listdir(path_buf, list, len > 0 ? len : 4096);
+		}
+		else {
+			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+				continue;
+			int len = snprintf(path_buf, path_buflen-1, "%s/%s", base_path, entry->d_name);
+			path_buf[len] = 0;
+			list.push_back(path_buf);
+		}
+	} while (entry = readdir(dir));
+
+	closedir(dir);
 }
 
 std::vector<std::string> Reimu::FileSystem::FileList(std::string path) {

@@ -63,8 +63,8 @@ void Test_ProgramOptions(){
 	myargv[4] = "--moe";
 	myargv[5] = "-a";
 	myargv[6] = "OaO QwQ";
-	myargv[7] = "--";
-	myargv[8] = "喵喵喵";
+	myargv[7] = "喵喵";
+	myargv[8] = "喵";
 	myargv[9] = "哒哒哒";
 
 	cout << "Command: ";
