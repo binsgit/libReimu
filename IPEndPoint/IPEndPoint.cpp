@@ -88,9 +88,6 @@ Reimu::IPEndPoint::IPEndPoint(sockaddr_in6 *sa6) {
 }
 
 Reimu::IPEndPoint::IPEndPoint(std::string ip_str, uint16_t port) {
-#ifdef Reimu_DEBUG
-	fprintf(stderr, "[%s @ %p] ip_str=%s, port=%u\n", __PRETTY_FUNCTION__, this, ip_str.c_str(), port);
-#endif
 	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
 
 	if (strchr(ip_str.c_str(), ':')) {
@@ -109,9 +106,6 @@ Reimu::IPEndPoint::IPEndPoint(std::string ip_str, uint16_t port) {
 
 	inet_pton(AddressFamily, ip_str.c_str(), Addr);
 
-#ifdef Reimu_DEBUG
-	fprintf(stderr, "[%s @ %p] addr_hex = %02x%02x%02x%02x\n", __PRETTY_FUNCTION__, this, Addr[0], Addr[1], Addr[2], Addr[3]);
-#endif
 	*Port_N = htons(port);
 	Port = port;
 }
@@ -124,9 +118,6 @@ std::string Reimu::IPEndPoint::ToString(Reimu::IPEndPoint::ArgType t) {
 		inet_ntop(AddressFamily, Addr, sbuf, INET6_ADDRSTRLEN);
 		std::string ret;
 		ret += sbuf;
-#ifdef Reimu_DEBUG
-		std::cout << "XXX: tostring: " << ret << "\n";
-#endif
 		return ret;
 	} else {
 		if (!Port)
@@ -220,8 +211,6 @@ bool const Reimu::IPEndPoint::operator<(const Reimu::IPEndPoint &o) const {
 }
 
 Reimu::IPEndPoint &Reimu::IPEndPoint::operator=(Reimu::IPEndPoint other) {
-	fprintf(stderr, "libReimu::IPEndPoint: move=: this=%p, old=%p\n", this, other);
-
 	_SockAddr = other._SockAddr;
 	AddressFamily = other.AddressFamily;
 	Port = other.Port;
@@ -240,8 +229,6 @@ Reimu::IPEndPoint::~IPEndPoint() {
 }
 
 Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &other) {
-	fprintf(stderr, "libReimu::IPEndPoint: copy: this=%p, old=%p\n", this, other);
-
 	_SockAddr = (union sa_inetall *)malloc(sizeof(union sa_inetall));
 	memcpy(_SockAddr, other._SockAddr, sizeof(_SockAddr));
 	AddressFamily = other.AddressFamily;
@@ -261,8 +248,6 @@ Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &other) {
 }
 
 Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &&other) {
-	fprintf(stderr, "libReimu::IPEndPoint: move: this=%p, old=%p\n", this, other);
-
 	_SockAddr = other._SockAddr;
 	AddressFamily = other.AddressFamily;
 	Port = other.Port;
