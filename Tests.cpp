@@ -26,6 +26,7 @@
 #include "Logging/Logging.hpp"
 #include "SQLAutomator/SQLAutomator.hpp"
 #include "UniversalType/UniversalType.hpp"
+#include "FileSystem/FileSystem.hpp"
 #include "ProgramOptions/ProgramOptions.hpp"
 #include "StringOps/StringOps.hpp"
 
@@ -225,6 +226,19 @@ void Test_StringOps(){
 	cout << "StringOps Test OK.\n\n";
 }
 
+void Test_FileSystem(){
+	cout << "Testing FileSystem:\n";
+
+	cout << "File list of /tmp :\n";
+	auto lst = FileSystem::FileList("/tmp");
+
+	for (auto &tf : lst) {
+		cout << tf << endl;
+	}
+
+	cout << "FileSystem Test OK.\n\n";
+}
+
 int main(){
 	Test_Base64();
 	Test_UniversalType();
@@ -232,4 +246,5 @@ int main(){
 	Test_SQLite3();
 	Test_Logging();
 	Test_StringOps();
+	Test_FileSystem();
 }

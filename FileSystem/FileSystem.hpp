@@ -24,11 +24,15 @@
 
 #include "../libReimu.hpp"
 
+#include <dirent.h>
+
 namespace Reimu {
     class FileSystem {
+	static void inline listdir(const char *base_path, std::vector<std::string> &list, ssize_t len);
     public:
 	static bool Exist(std::string path);
 	static bool MkDir_P(std::string path);
+	static std::vector<std::string> FileList(std::string path);
     };
 
 
