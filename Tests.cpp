@@ -26,6 +26,7 @@
 #include "Logging/Logging.hpp"
 #include "SQLAutomator/SQLAutomator.hpp"
 #include "UniversalType/UniversalType.hpp"
+#include "int128_t/int128_t.hpp"
 #include "FileSystem/FileSystem.hpp"
 #include "ProgramOptions/ProgramOptions.hpp"
 #include "StringOps/StringOps.hpp"
@@ -237,6 +238,12 @@ void Test_FileSystem(){
 	}
 
 	cout << "FileSystem Test OK.\n\n";
+}
+
+void Test_int128(){
+//	int128_t a;
+//
+//	unordered_map<int128_t, int128_t> mm;
 }
 
 int main(){

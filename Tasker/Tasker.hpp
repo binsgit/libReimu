@@ -75,6 +75,8 @@ namespace Reimu {
     private:
 	void SetCommonArgs(void (*func)(void *), void *arg, bool run_immediately);
 	static void CalcCountdown(Tasker *t);
+
+	pthread_mutex_t CancelLock = PTHREAD_MUTEX_INITIALIZER;
     };
 }
 #endif //LIBREIMU_TASKER_HPP

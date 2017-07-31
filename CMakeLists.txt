@@ -30,7 +30,7 @@ set(SOURCE_FILES IPEndPoint/IPEndPoint.cpp IPEndPoint/IPEndPoint.hpp libReimu.hp
         TermColors/TermColors.cpp TermColors/TermColors.hpp DateTime/DateTime.cpp DateTime/DateTime.hpp Logging/Logging.cpp Logging/Logging.hpp StringOps/StringOps.cpp StringOps/StringOps.hpp)
 
 
-add_library(Reimu SHARED ${SOURCE_FILES} ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.hpp)
+add_library(Reimu SHARED ${SOURCE_FILES} ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.hpp int128_t/int128_t.cpp int128_t/int128_t.hpp)
 
 add_library(Reimu_static STATIC ${SOURCE_FILES})
 
