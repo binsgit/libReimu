@@ -258,4 +258,27 @@ Reimu::IPEndPoint::IPEndPoint(const Reimu::IPEndPoint &&other) {
 
 }
 
+std::string Reimu::IPEndPoint::ToString(in6_addr *addr) {
+	char buf[INET6_ADDRSTRLEN];
+	inet_ntop(AF_INET6, addr, buf, INET6_ADDRSTRLEN);
+
+	return std::string(buf);
+}
+
+std::string Reimu::IPEndPoint::ToString(in_addr *addr) {
+	char buf[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, addr, buf, INET_ADDRSTRLEN);
+
+	return std::string(buf);
+}
+
+std::string Reimu::IPEndPoint::ToString(in_addr_t addr) {
+	char buf[INET_ADDRSTRLEN];
+	struct in_addr abuf;
+	abuf.s_addr = addr;
+	inet_ntop(AF_INET, &abuf, buf, INET_ADDRSTRLEN);
+
+	return std::string(buf);
+}
+
 

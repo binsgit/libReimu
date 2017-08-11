@@ -71,6 +71,10 @@ namespace Reimu {
 
 	std::string ToString();
 	std::string ToString(ArgType t);
+	static std::string ToString(in_addr *addr);
+	static std::string ToString(in_addr_t addr);
+	static std::string ToString(in6_addr *addr);
+
 
     private:
 	void InitFromRaw(void *inaddr, size_t inaddr_len, uint16_t port);
